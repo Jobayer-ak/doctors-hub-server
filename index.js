@@ -3,18 +3,20 @@ const cors = require("cors");
 require("dotenv").config();
 const colors = require("colors");
 const { dbConnection } = require("./db");
+const slotRoute = require("./routes/slot.route");
 
-const port = process.env.PORT || 50001;
 const app = express();
-// middlewares
-app.use(express());
-app.use(express.json());
+const port = process.env.PORT || 50001;
 
-// db connection 
+// middlewares
+app.use(express.json());
+app.use(cors());
+
+// db connection
 dbConnection();
 
-// api calling 
-
+// api calling
+app.use("/api/v1/slots", slotRoute);
 
 app.listen(port, () => {
   console.log(`App is running at ${port}!`.yellow.bold);
