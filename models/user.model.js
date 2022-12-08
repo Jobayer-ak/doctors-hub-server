@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const userSchema = mongoose.Schema(
   {
@@ -70,18 +71,14 @@ const userSchema = mongoose.Schema(
 
 userSchema.pre("save", function (next) {
   const password = this.password;
-  const hashedPassword = bcrypt.hashSync(password);
 
-  this.password = hashedPassword;
-  this.confirmPassword = undefined;
+  bcrypt.hash(password, saltRounds, function (err, hash) {
+    this.password = hash;
+    this.confirmPassword = undefined;
+  });
 
   next();
 });
-
-userSchema.methods.comparePassword = function (password, hash) {
-  const isPassword = bcrypt.compareSync(password, hash);
-  return isPassword;
-};
 
 const User = mongoose.model("User", userSchema);
 
