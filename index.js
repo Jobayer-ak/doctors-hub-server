@@ -21,6 +21,7 @@ dbConnection();
 // api calling
 app.use("/api/v1/", slotRoute);
 app.use("/api/v1/", userRoute);
+app.use("/api/v1/", userRoute)
 
 app.listen(port, () => {
   console.log(`App is running at ${port}!`.yellow.bold);
