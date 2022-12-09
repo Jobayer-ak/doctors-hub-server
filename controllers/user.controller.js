@@ -23,6 +23,9 @@ exports.login = async (req, res) => {
     const { email, password } = req.body;
     const user = await loginService(email);
 
+
+    // generate token
+    // const token = generateToken(user);
     res.status(200).json({
       status: "success",
       message: user,
