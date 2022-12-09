@@ -5,6 +5,6 @@ exports.signUpService = async (userInfo) => {
   return user;
 };
 
-exports.loginService = async (email) => {
+exports.findByEmailService = async (email) => {
     return await User.findOne({ email });
 }

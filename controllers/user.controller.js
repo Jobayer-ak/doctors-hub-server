@@ -1,4 +1,7 @@
-const { signUpService, loginService } = require("../services/user.service");
+const bcrypt = require("bcrypt");
+
+const { signUpService, findByEmailService } = require("../services/user.service");
+const { generateToken } = require("../utils/token");
 
 // signup
 exports.signup = async (req, res) => {
@@ -21,14 +24,47 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await loginService(email);
 
+    // check email and password are provided
+    if (!email || !password) {
+      return res.status(401).json({
+        status: "Failed",
+        error: "Pease provide your username and password!",
+      });
+    }
+
+    // load user with email
+    const user = await findByEmailService(email);
+
+    if (!user) {
+      return res.status(401).json({
+        status: "Failed",
+        error: "No user found! please create an account!",
+      });
+    }
+
+    //is password valid?
+    bcrypt.compare(password, user.password, function (err, result) {
+      if (result === false) {
+        return res.status(401).json({
+          status: "Failed",
+          message: "Password is not correct",
+        });
+      }
+    });
 
     // generate token
-    // const token = generateToken(user);
+    const token = generateToken(user);
+
+    const { password: pwd, ...others } = user.toObject();
+
     res.status(200).json({
       status: "success",
-      message: user,
+      message: "Successfully loggedin",
+      data: {
+        user: others,
+        token,
+      },
     });
   } catch (error) {
     res.status(500).json({
