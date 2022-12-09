@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 
-const { signUpService, findByEmailService } = require("../services/user.service");
+const {
+  signUpService,
+  findByEmailService,
+} = require("../services/user.service");
 const { generateToken } = require("../utils/token");
 
 // signup
@@ -29,7 +32,7 @@ exports.login = async (req, res) => {
     if (!email || !password) {
       return res.status(401).json({
         status: "Failed",
-        error: "Pease provide your username and password!",
+        error: "Please provide your username and password!",
       });
     }
 
@@ -51,7 +54,6 @@ exports.login = async (req, res) => {
           message: "Password is not correct!",
         });
       }
-      console.log(err.message)
     });
 
     // generate token
