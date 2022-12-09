@@ -48,9 +48,10 @@ exports.login = async (req, res) => {
       if (result === false) {
         return res.status(401).json({
           status: "Failed",
-          message: "Password is not correct",
+          message: "Password is not correct!",
         });
       }
+      console.log(err.message)
     });
 
     // generate token

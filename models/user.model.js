@@ -70,15 +70,18 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.pre("save", function (next) {
-  const password = this.password;
+  const hash = bcrypt.hashSync(this.password, saltRounds);
 
-  bcrypt.hash(password, saltRounds, function (err, hash) {
-    this.password = hash;
-    this.confirmPassword = undefined;
-  });
+  this.password = hash;
+  this.confirmPassword = undefined;
 
   next();
 });
+
+userSchema.methods.comparePassword = function (password, hash) {
+  const isPasswordValid = bcrypt.compareSync(password, hash); // true
+  return isPasswordValid;
+};
 
 const User = mongoose.model("User", userSchema);
 
