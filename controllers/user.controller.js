@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const { response } = require("express");
+const passport = require("passport");
 
 const {
   signUpService,
@@ -23,56 +25,77 @@ exports.signup = async (req, res) => {
   }
 };
 
-// login
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+// const pss = require("../auth/passportConfig");
 
-    // check email and password are provided
-    if (!email || !password) {
-      return res.status(401).json({
-        status: "Failed",
-        error: "Please provide your username and password!",
-      });
+// login with passport local strategy
+exports.login = async (req, res, next) => {
+  await passport.authenticate("local", (err, user, message) => {
+    // console.log(user, message);
+
+    if (err) {
+      return res.status(400).json({ error: errors.message });
     }
-
-    // load user with email
-    const user = await findByEmailService(email);
-
     if (!user) {
-      return res.status(401).json({
-        status: "Failed",
-        error: "No user found! please create an account!",
-      });
+      return res.status(403).json({ error: message });
     }
-
-    //is password valid?
-    bcrypt.compare(password, user.password, function (err, result) {
-      if (result === false) {
-        return res.status(401).json({
-          status: "Failed",
-          message: "Password is not correct!",
-        });
-      }
-    });
-
-    // generate token
-    const token = generateToken(user);
-
-    const { password: pwd, ...others } = user.toObject();
 
     res.status(200).json({
-      status: "success",
-      message: "Successfully loggedin",
-      data: {
-        user: others,
-        token,
-      },
+      status: "Success",
+      user,
     });
-  } catch (error) {
-    res.status(500).json({
-      status: "Failed",
-      message: error.message,
-    });
-  }
+  })(req, res, next);
 };
+
+// login
+// exports.login = async (req, res, next) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // check email and password are provided
+//     if (!email || !password) {
+//       return res.status(401).json({
+//         status: "Failed",
+//         error: "Please provide your username and password!",
+//       });
+//     }
+
+//     // load user with email
+//     // const user = await findByEmailService(email);
+
+//     if (!user) {
+//       return res.status(401).json({
+//         status: "Failed",
+//         error: "No user found! please create an account!",
+//       });
+//     }
+
+//     //is password valid?
+//     bcrypt.compare(password, user.password, function (err, result) {
+//       if (result === false) {
+//         return res.status(401).json({
+//           status: "Failed",
+//           message: "Password is not correct!",
+//         });
+//       }
+//     });
+
+//     // generate token
+//     const token = generateToken(user);
+
+//     const { password: pwd, ...others } = user.toObject();
+
+//     res.status(200).json({
+//       status: "success",
+//       message: "Successfully loggedin",
+//       data: {
+//         user: others,
+//         token,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       status: "Failed",
+//       message: error.message,
+//     });
+//   }
+// };
