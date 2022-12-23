@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 const colors = require("colors");
 const { dbConnection } = require("./db");
@@ -11,23 +12,8 @@ const port = process.env.PORT || 5001;
 app.use(express.json());
 app.use(cors());
 
-// express-session
-// app.set("trust proxy", 1); // trust first proxy
-// app.use(
-//   session({
-//     secret: "keyboard cat",
-//     resave: false,
-//     saveUninitialized: false,
-//     store: MongoStore.create({
-//       mongoUrl: process.env.URL,
-//       collectionName: "sessions",
-//     }),
-//     cookie: { secure: true }
-//   })
-// );
-
-// app.use(passport.initialize());
-// app.use(passport.session());
+// cookie parser
+app.use(cookieParser());
 
 // routes
 const slotRoute = require("./routes/slot.route");

@@ -3,7 +3,8 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
-const userSchema = mongoose.Schema(
+const Schema = mongoose.Schema;
+const userSchema = new Schema(
   {
     name: {
       type: String,

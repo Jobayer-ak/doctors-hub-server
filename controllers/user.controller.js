@@ -54,7 +54,6 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const cookies = req.cookies;
 
     // check email and password are provided
     if (!email || !password) {
@@ -89,65 +88,11 @@ exports.login = async (req, res) => {
     // generate token
     const token = generateToken(user);
 
-    // generate refresh token
-    const payload = {
-      email: user.email,
-      role: user.role,
-    };
+    res.cookie('token', token, { httpOnly: true });
+    
+    res.json({ token });
 
-    const newRefreshToken = jwt.sign(
-      payload,
-      process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: "1d" }
-    );
-
-    let newRefreshTokenArray = !cookies?.jwt
-      ? user.refreshToken
-      : user.refreshToken.filter((rt) => rt !== cookies.jwt);
-
-    // console.log(newRefreshTokenArray);
-
-    if (cookies?.jwt) {
-      const refreshToken = cookies.jwt;
-      const foundToken = await User.findOne({ refreshToken }).exec();
-      console.log("found");
-      // detected refresh token reuse
-      if (!foundToken) {
-        console.log("attemted refresh token reuse at login!");
-        // clear out all previous refresh tokens
-        newRefreshTokenArray = [];
-      }
-
-      // set cookies
-      res.clearCookie("jwt", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-      });
-    }
-
-    // saving refreshToken with current user
-    user.refreshToken = [...newRefreshTokenArray, newRefreshToken];
-    // const result = await user.save();
-    const { password: pwd, ...others } = user.toObject();
-    console.log(others);
-
-    // create secure cookie with refresh token
-    res.cookie("jwt", newRefreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    res.status(200).json({
-      status: "success",
-      message: "Successfully loggedin",
-      data: {
-        user: others,
-        token,
-      },
-    });
+    
   } catch (error) {
     res.status(500).json({
       status: "Failed",
