@@ -5,6 +5,7 @@ const { getSlotsService } = require("../services/slots.service");
 exports.getSlots = async (req, res) => {
   try {
     const slots = await getSlotsService();
+    console.log(req.cookies);
 
     res.status(200).json({
       status: "Success",
