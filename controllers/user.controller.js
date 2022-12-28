@@ -70,7 +70,6 @@ exports.login = async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        maxAge: 24 * 60 * 60 * 1000,
       })
       .json({
         success: true,
@@ -200,12 +199,13 @@ exports.login = async (req, res) => {
 // logout
 exports.logout = async (req, res) => {
   try {
-    res.clearCookie("access_token", {
-      httpOnly: true,
-      sameSite: "None",
-      secure: true,
-      path: "/",
-    });
+    res
+      .clearCookie("token", {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+      })
+      .json({ message: "cookie is cleared!" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

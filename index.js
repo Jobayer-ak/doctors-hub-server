@@ -47,9 +47,7 @@ dbConnection();
 // api calling
 app.use("/api/v1/", userRoute);
 app.use("/api/v1/", userRoute);
-
-// app.use(verifyToken);
-
+app.use("/api/v1/", userRoute);
 app.use("/api/v1/", slotRoute);
 
 // if (decodedToken) {
