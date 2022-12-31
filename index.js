@@ -54,7 +54,8 @@ app.use("/api/v1/", userRoute);
 app.use("/api/v1/", slotRoute);
 
 // booking routes
-app.use("/api/v1/");
+const bookingRoute = require("./routes/booking.route");
+app.use("/api/v1/", bookingRoute);
 
 // if (decodedToken) {
 //   console.log(red.cookies.token);
