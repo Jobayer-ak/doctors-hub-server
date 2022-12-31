@@ -45,10 +45,16 @@ dbConnection();
 // console.log(req.cookies.token);
 
 // api calling
+// user Routes
 app.use("/api/v1/", userRoute);
 app.use("/api/v1/", userRoute);
 app.use("/api/v1/", userRoute);
+
+// slots route
 app.use("/api/v1/", slotRoute);
+
+// booking routes
+app.use("/api/v1/");
 
 // if (decodedToken) {
 //   console.log(red.cookies.token);
