@@ -22,12 +22,15 @@ exports.bookingTreatment = async (req, res) => {
     // console.log(req.body);
 
     const exists = await Booking.findOne(bookInfo);
+
     if (exists) {
-      // console.log(exists);
-      return res.send({
-        success: false,
-        message: "You already have an Appointment",
-      });
+      if (exists.date === booking.date) {
+        // console.log("inside");
+        return res.send({
+          success: false,
+          message: "You already have an Appointment",
+        });
+      }
     } else {
       const booked = await createBookingService(req.body);
 
