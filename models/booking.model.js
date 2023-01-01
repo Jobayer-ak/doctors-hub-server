@@ -8,6 +8,10 @@ const bookingSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    // treatmentId: {
+    //   type: String,
+    //   // required: true,
+    // },
     treatmentId: [
       {
         type: ObjectId,

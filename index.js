@@ -36,6 +36,7 @@ app.use(function (req, res, next) {
 // routes
 const slotRoute = require("./routes/slot.route");
 const userRoute = require("./routes/user.route.js");
+const bookingRoute = require("./routes/booking.route");
 const { default: jwtDecode } = require("jwt-decode");
 const verifyToken = require("./middlewares/verifyToken");
 
@@ -54,7 +55,6 @@ app.use("/api/v1/", userRoute);
 app.use("/api/v1/", slotRoute);
 
 // booking routes
-const bookingRoute = require("./routes/booking.route");
 app.use("/api/v1/", bookingRoute);
 
 // if (decodedToken) {

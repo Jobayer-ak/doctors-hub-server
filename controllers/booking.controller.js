@@ -1,10 +1,12 @@
-const Booking = require("../models/booking.model");
+const { createBookingService } = require("../services/booking.service");
 
 exports.bookingTreatment = async (req, res) => {
   try {
-    const bookingInfo = req.body;
-    const booked = await Booking.create(bookingInfo);
+    // console.log("heelo");
 
+    console.log(req.body);
+    const booked = await createBookingService(req.body);
+    console.log(55);
     res.status(200).json({
       status: "Success",
       message: "Successfully Signed Up!",
@@ -12,7 +14,7 @@ exports.bookingTreatment = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      error: error.message,
+      error: error,
     });
   }
 };
