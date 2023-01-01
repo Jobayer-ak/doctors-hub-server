@@ -1,17 +1,42 @@
+const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
 
 exports.bookingTreatment = async (req, res) => {
   try {
-    // console.log("heelo");
+    const booking = req.body;
+    // const booking = {
+    //   treatmentName: name,
+    //   treatmentId: _id,
+    //   patientName: user.userName,
+    //   patientEmail: user.userEmail,
+    //   contactNumber: e.target.phone.value,
+    //   slot: e.target.slot.value,
+    //   date: formatedDate,
+    // }
+    const bookInfo = {
+      treatmentName: booking.treatmentName,
+      date: booking.date,
+      patientName: booking.patientName,
+    };
 
-    console.log(req.body);
-    const booked = await createBookingService(req.body);
-    console.log(55);
-    res.status(200).json({
-      status: "Success",
-      message: "Successfully Signed Up!",
-      bookingResponse: booked,
-    });
+    // console.log(req.body);
+
+    const exists = await Booking.findOne(bookInfo);
+    if (exists) {
+      // console.log(exists);
+      return res.send({
+        success: false,
+        message: "You already have an Appointment",
+      });
+    } else {
+      const booked = await createBookingService(req.body);
+
+      return res.send({
+        success: true,
+        message: "Your Appointment is Success",
+        bookingResponse: booked,
+      });
+    }
   } catch (error) {
     res.status(500).json({
       error: error,
