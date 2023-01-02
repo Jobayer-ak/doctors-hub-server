@@ -32,7 +32,7 @@ const bookingSchema = mongoose.Schema(
     },
     contactNumber: {
       type: String,
-      validate: [
+      validate: [ 
         validator.isMobilePhone,
         "Please provide a valid contact number!",
       ],

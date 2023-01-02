@@ -1,7 +1,7 @@
-const Slot = require("../models/slots.model")
+const Slot = require("../models/slots.model");
 
-exports.getSlotsService = async () =>{
-    const result = await Slot.find({});
+exports.getSlotsService = async () => {
+  const result = await Slot.find({});
 
-    return result;
-}
+  return result;
+};

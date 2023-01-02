@@ -18,3 +18,4 @@ const slotsSchema = mongoose.Schema(
 const Slot = mongoose.model("Slot", slotsSchema);
 
 module.exports = Slot;
+ 

@@ -7,4 +7,4 @@ const verifyToken2 = require("../middlewares/verifyToken2");
 // get time slots
 router.get("/slots", verifyToken, slots.getSlots);
 
-module.exports = router;
+module.exports = router; 
