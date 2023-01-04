@@ -48,12 +48,7 @@ exports.getSlots = async (req, res) => {
       },
     ]);
 
-    // console.log(bookingSlots);
-
-    res.status(200).json({
-      status: "Success",
-      data: bookingSlots,
-    });
+    res.send(bookingSlots);
   } catch (error) {
     res.status(400).json({
       status: "Failed",
