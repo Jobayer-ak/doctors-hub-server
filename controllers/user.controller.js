@@ -1,14 +1,15 @@
 const bcrypt = require("bcrypt");
 // const { response } = require("express");
 const jwt = require("jsonwebtoken");
-
 const {
   signUpService,
   findByEmailService,
 } = require("../services/user.service");
 const { generateToken } = require("../utils/token");
 const User = require("../models/user.model");
+const { OAuth2Client } = require("google-auth-library");
 
+const client = new OAuth2Client(process.env.CLIENT_ID);
 // signup
 exports.signup = async (req, res) => {
   try {
@@ -43,7 +44,6 @@ exports.login = async (req, res) => {
     const user = await findByEmailService(email);
 
     if (!user) {
-      console.log("user");
       return res.status(401).json({
         // 401 unauthorized
         status: "Failed",

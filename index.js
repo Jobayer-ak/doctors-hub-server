@@ -55,6 +55,7 @@ app.use("/api/v1/", userRoute);
 app.use("/api/v1/", slotRoute);
 
 // booking routes
+app.use("/api/v1", bookingRoute);
 app.use("/api/v1/", bookingRoute);
 
 // if (decodedToken) {
