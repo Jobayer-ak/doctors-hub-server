@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // middlewares
 app.use(express.json());
-// app.use(express.urlencoded());
+app.use(express.urlencoded());
 
 app.use(
   cors({
@@ -43,12 +43,9 @@ const verifyToken = require("./middlewares/verifyToken");
 // db connection
 dbConnection();
 
-// console.log(req.cookies.token);
 
 // api calling
 // user Routes
-app.use("/api/v1/", userRoute);
-app.use("/api/v1/", userRoute);
 app.use("/api/v1/", userRoute);
 
 // slots route
@@ -56,11 +53,6 @@ app.use("/api/v1/", slotRoute);
 
 // booking routes
 app.use("/api/v1", bookingRoute);
-app.use("/api/v1/", bookingRoute);
-
-// if (decodedToken) {
-//   console.log(red.cookies.token);
-// }
 
 app.listen(port, () => {
   console.log(`App is running at ${port}!`.yellow.bold);

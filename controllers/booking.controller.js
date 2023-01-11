@@ -42,13 +42,11 @@ exports.getBookingDetails = async (req, res) => {
     const email = req.query.patient;
 
     if (email === req.user.email) {
-      console.log("email is matched");
       const bookings = await Booking.find({ patientEmail: req.user.email });
       res.send(bookings);
     } else {
       return res.status(403).send({ message: "Forbidden Access" });
     }
-    // console.log(bookings);
   } catch (error) {
     res.send(error);
   }

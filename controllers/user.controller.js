@@ -7,9 +7,18 @@ const {
 } = require("../services/user.service");
 const { generateToken } = require("../utils/token");
 const User = require("../models/user.model");
-const { OAuth2Client } = require("google-auth-library");
 
-const client = new OAuth2Client(process.env.CLIENT_ID);
+exports.getAllUsers = async (req, res) => {
+  try {
+    console.log(req.user);
+    const users = await User.find();
+    // console.log(users);
+    res.send(users);
+  } catch (error) {
+    res.send(error);
+  }
+};
+
 // signup
 exports.signup = async (req, res) => {
   try {
