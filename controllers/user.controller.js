@@ -224,7 +224,19 @@ exports.logout = async (req, res) => {
 // add doctor by admin
 exports.addDoctor = async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
+    const email = req.body.email;
+
+    const exist = await Doctor.find({ email });
+
+    if (exist.length !== 0) {
+      console.log("Hello", exist);
+
+      return res.send({
+        status: 403,
+        message: "This doctor is already added.",
+      });
+    }
 
     const doctors = await Doctor.create(req.body);
     console.log("response: ", doctors);
@@ -234,6 +246,22 @@ exports.addDoctor = async (req, res) => {
     res.status(500).json({
       status: "Failed",
       message: error,
+    });
+  }
+};
+
+// get all doctors
+exports.getAllDoctor = async (req, res) => {
+  try {
+
+    const doctors = await Doctor.find({});
+
+    res.status(200).send(doctors);
+  
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      message: error.message,
     });
   }
 };
