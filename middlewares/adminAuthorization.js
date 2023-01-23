@@ -12,14 +12,12 @@ const adminAuthorization = (req, res, next) => {
     if (err) {
       return res.status(401).send({ message: "UnAuthorized Access!" });
     }
-   
+
     if (decoded.role !== "admin") {
-      console.log("role");
       return res.status(401).send({ message: "You are not admin!" });
     }
 
     req.user = decoded;
-    console.log(1, req.user);
 
     next();
   });

@@ -7,6 +7,7 @@ const {
 } = require("../services/user.service");
 const { generateToken } = require("../utils/token");
 const User = require("../models/user.model");
+const Doctor = require("../models/addDoctor.model");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -66,7 +67,7 @@ exports.login = async (req, res) => {
     if (!isPassMatch) {
       return res.status(400).json({
         status: "Failed",
-        message: "wrong password",
+        message: "Username or Password is wrong",
       });
     }
 
@@ -217,5 +218,22 @@ exports.logout = async (req, res) => {
       .json({ message: "cookie is cleared!" });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// add doctor by admin
+exports.addDoctor = async (req, res) => {
+  try {
+    console.log(req.body);
+
+    const doctors = await Doctor.create(req.body);
+    console.log("response: ", doctors);
+
+    res.send(doctors);
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      message: error,
+    });
   }
 };

@@ -8,5 +8,6 @@ router.get("/admin/users", adminAuthorization, userController.getAllUsers);
 router.get("/logout", verifyToken, userController.logout);
 router.post("/signup", userController.signup);
 router.post("/login", userController.login);
+router.post("/admin/addDoctor", verifyToken, adminAuthorization, userController.addDoctor);
 
 module.exports = router;

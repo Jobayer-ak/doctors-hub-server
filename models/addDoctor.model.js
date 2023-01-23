@@ -2,43 +2,53 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const ObjectId = mongoose.Types.ObjectId;
 
-const bookingSchema = mongoose.Schema(
+const doctorSchema = mongoose.Schema(
   {
-    treatmentName: {
+    name: {
       type: String,
       required: true,
     },
-    treatmentId: [
-      {
-        type: ObjectId,
-        ref: "Slot",
-      },
-    ],
-    patientName: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-    patientEmail: {
+    email: {
       type: String,
       validate: [validator.isEmail, "Provide a valid Email!"],
       trim: true,
+      unique: true,
       lowercase: true,
       required: [true, "Email address is required"],
     },
-    contactNumber: {
+    contact_number: {
       type: String,
-      validate: [ 
+      validate: [
         validator.isMobilePhone,
         "Please provide a valid contact number!",
       ],
       required: true,
     },
-    slot: {
+    address: {
       type: String,
       required: true,
     },
-    date: {
+    gender: {
+      type: String,
+      required: true,
+    },
+    working_hospital: {
+      type: String,
+      required: true,
+    },
+    treatment_area: {
+      type: String,
+      required: true,
+    },
+    studied_medical_college: {
+      type: String,
+      required: true,
+    },
+    higher_degree: {
+      type: String,
+      required: true,
+    },
+    blood_group: {
       type: String,
       required: true,
     },
@@ -46,6 +56,6 @@ const bookingSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const Booking = mongoose.model("Booking", bookingSchema);
+const Doctor = mongoose.model("Doctor", doctorSchema);
 
-module.exports = Booking;
+module.exports = Doctor;
