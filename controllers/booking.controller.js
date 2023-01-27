@@ -6,15 +6,21 @@ exports.bookingTreatment = async (req, res) => {
     const booking = req.body;
 
     const bookInfo = {
-      treatmentName: booking.treatmentName,
+      doctor_id: booking.doctor_id,
       date: booking.date,
-      patientName: booking.patientName,
+      slot: booking.slot,
+      patient_email: booking.patient_email,
     };
 
     const exists = await Booking.findOne(bookInfo);
 
     if (exists) {
-      if (exists.date === booking.date) {
+      if (
+        exists.date === booking.date &&
+        exists.doctor_id == booking.doctor_id &&
+        exists.slot == booking.slot &&
+        exists.patient_email === booking.patient_email
+      ) {
         return res.send({
           success: false,
           message: "You already have an Appointment",
@@ -25,7 +31,7 @@ exports.bookingTreatment = async (req, res) => {
 
       return res.send({
         success: true,
-        message: "Your Appointment is Success",
+        message: "Successfully Booked Your Appointment",
         bookingResponse: booked,
       });
     }

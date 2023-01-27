@@ -253,14 +253,27 @@ exports.addDoctor = async (req, res) => {
 // get all doctors
 exports.getAllDoctor = async (req, res) => {
   try {
-
     const doctors = await Doctor.find({});
 
     res.status(200).send(doctors);
-  
   } catch (error) {
     res.status(500).json({
       status: "Failed",
+      message: error.message,
+    });
+  }
+};
+
+// get admin
+exports.getAdmin = async (req, res) => {
+  try {
+    const email = req.params;
+
+    const result = await User.findOne(email)
+
+    res.send(result);
+  } catch (error) {
+    res.status(500).json({
       message: error.message,
     });
   }
