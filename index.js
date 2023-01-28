@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // middlewares
 app.use(express.json());
-app.use(express.urlencoded());
+// app.use(express.urlencoded());
 
 app.use(
   cors({
@@ -37,6 +37,7 @@ app.use(function (req, res, next) {
 const slotRoute = require("./routes/slot.route");
 const userRoute = require("./routes/user.route.js");
 const bookingRoute = require("./routes/booking.route");
+const doctorRoute = require("./routes/doctor.route");
 const { default: jwtDecode } = require("jwt-decode");
 const verifyToken = require("./middlewares/verifyToken");
 
@@ -47,6 +48,9 @@ dbConnection();
 // api calling
 // user Routes
 app.use("/api/v1/", userRoute);
+
+// doctors route
+app.use("/api/v1/", doctorRoute);
 
 // slots route
 app.use("/api/v1/", slotRoute);

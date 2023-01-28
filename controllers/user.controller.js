@@ -7,7 +7,7 @@ const {
 } = require("../services/user.service");
 const { generateToken } = require("../utils/token");
 const User = require("../models/user.model");
-const Doctor = require("../models/addDoctor.model");
+const Doctor = require("../models/doctor.model");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -76,7 +76,7 @@ exports.login = async (req, res) => {
     const { password: pwd, ...others } = user.toObject();
 
     res
-      .cookie("token", token, {
+      .cookie("myCookie", token, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
@@ -209,68 +209,23 @@ exports.login = async (req, res) => {
 // logout
 exports.logout = async (req, res) => {
   try {
-    res
-      .clearCookie("token", {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
-      })
-      .json({ message: "cookie is cleared!" });
+    await res.clearCookie("myCookie");
+    // console.log("cook ",result)
+    res.send({ message: "cookie is cleared!" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// add doctor by admin
-exports.addDoctor = async (req, res) => {
-  try {
-    // console.log(req.body);
-    const email = req.body.email;
 
-    const exist = await Doctor.find({ email });
-
-    if (exist.length !== 0) {
-      console.log("Hello", exist);
-
-      return res.send({
-        status: 403,
-        message: "This doctor is already added.",
-      });
-    }
-
-    const doctors = await Doctor.create(req.body);
-    console.log("response: ", doctors);
-
-    res.send(doctors);
-  } catch (error) {
-    res.status(500).json({
-      status: "Failed",
-      message: error,
-    });
-  }
-};
-
-// get all doctors
-exports.getAllDoctor = async (req, res) => {
-  try {
-    const doctors = await Doctor.find({});
-
-    res.status(200).send(doctors);
-  } catch (error) {
-    res.status(500).json({
-      status: "Failed",
-      message: error.message,
-    });
-  }
-};
 
 // get admin
 exports.getAdmin = async (req, res) => {
   try {
     const email = req.params;
 
-    const result = await User.findOne(email)
-
+    const result = await User.findOne(email);
+    console.log(result);
     res.send(result);
   } catch (error) {
     res.status(500).json({

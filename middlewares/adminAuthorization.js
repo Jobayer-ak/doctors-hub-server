@@ -2,8 +2,9 @@ const jwt = require("jsonwebtoken");
 
 const adminAuthorization = (req, res, next) => {
   // const token = req.headers.authorization;
-  const token = req.cookies.token;
+  const token = req.cookies.myCookie;
 
+  console.log(token)
   if (!token) {
     return res.status(401).json({ message: "Authentication invalid" });
   }
