@@ -38,8 +38,12 @@ const bookingSchema = mongoose.Schema(
       type: String,
       required: [true, "Slot is required"],
     },
-    date: {
+    speciality: {
       type: String,
+      required: true,
+    },
+    date: {
+      type: Number,
       required: [true, "Date is required"],
     },
     gender: {

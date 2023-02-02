@@ -1,7 +1,7 @@
 const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
 
-exports.bookingTreatment = async (req, res) => {
+exports.bookingAppointment = async (req, res) => {
   try {
     const booking = req.body;
 
@@ -12,7 +12,11 @@ exports.bookingTreatment = async (req, res) => {
       patient_email: booking.patient_email,
     };
 
+    // console.log(booking);
+
     const exists = await Booking.findOne(bookInfo);
+
+    // console.log(exists)
 
     if (exists) {
       if (
@@ -57,3 +61,39 @@ exports.getBookingDetails = async (req, res) => {
     res.send(error);
   }
 };
+
+// getting pending bookings
+exports.pendingAppointments = async (req, res) => {
+  try {
+    const email = req.query.patient;
+    const date = req.query.date;
+
+    const current = new Date(date);
+
+    console.log(current);
+
+    let today = new Date();
+    let hour = today.getHours();
+    let hour12Format = hour % 12 || 12;
+    console.log(hour12Format);
+
+    // console.log("date: ", date);
+    if (email === req.user.email) {
+      const pending = await Booking.find({
+        email: email,
+        date: { $gte: current },
+      });
+      const up = pending.filter(
+        (a) => parseInt(a.slot.slice(0, 1)) < hour12Format
+      );
+      console.log(up);
+      res.send(pending);
+    } else {
+      return res.status(403).send({ message: "Forbidden Access" });
+    }
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+// convert date to miliseconds 

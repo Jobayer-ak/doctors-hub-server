@@ -50,7 +50,7 @@ const doctorSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    treatment_area: {
+    speciality: {
       type: String,
       required: true,
     },
@@ -72,7 +72,7 @@ const doctorSchema = mongoose.Schema(
     },
     time_slots: {
       type: Array,
-      default: checkupTime,
+      required: true,
     },
   },
   { timestamps: true }

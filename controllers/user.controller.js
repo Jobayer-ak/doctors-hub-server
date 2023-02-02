@@ -11,7 +11,7 @@ const Doctor = require("../models/doctor.model");
 
 exports.getAllUsers = async (req, res) => {
   try {
-    console.log(req.user);
+    // console.log(req.user);
     const users = await User.find();
     // console.log(users);
     res.send(users);
@@ -225,7 +225,7 @@ exports.getAdmin = async (req, res) => {
     const email = req.params;
 
     const result = await User.findOne(email);
-    console.log(result);
+    // console.log(result);
     res.send(result);
   } catch (error) {
     res.status(500).json({

@@ -9,8 +9,6 @@ exports.addDoctor = async (req, res) => {
     const exist = await Doctor.find({ email });
 
     if (exist.length !== 0) {
-      console.log("Hello", exist);
-
       return res.send({
         status: 403,
         message: "This doctor is already added.",
@@ -18,7 +16,6 @@ exports.addDoctor = async (req, res) => {
     }
 
     const doctors = await Doctor.create(req.body);
-    console.log("response: ", doctors);
 
     res.send(doctors);
   } catch (error) {
@@ -47,47 +44,6 @@ exports.getAllDoctor = async (req, res) => {
 exports.getTimeSlots = async (req, res) => {
   try {
     const date = req.query.date;
-    
-    // const bookingSlots = await Slot.aggregate([
-    //   {
-    //     $lookup: {
-    //       from: "bookings",
-    //       localField: "name",
-    //       foreignField: "treatmentName",
-    //       pipeline: [
-    //         {
-    //           $match: {
-    //             $expr: {
-    //               $eq: ["$date", date],
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       as: "booked",
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       name: 1,
-    //       slots: 1,
-    //       booked: {
-    //         $map: {
-    //           input: "$booked",
-    //           as: "book",
-    //           in: "$$book.slot",
-    //         },
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       name: 1,
-    //       slots: {
-    //         $setDifference: ["$slots", "$booked"],
-    //       },
-    //     },
-    //   },
-    // ]);
 
     const bookingSlots = await Doctor.aggregate([
       {
@@ -116,7 +72,7 @@ exports.getTimeSlots = async (req, res) => {
           working_hospital: 1,
           higher_degree: 1,
           department: 1,
-          treatment_area:1,
+          speciality: 1,
           time_slots: 1,
           branch: 1,
           booked: {
@@ -136,7 +92,7 @@ exports.getTimeSlots = async (req, res) => {
           working_hospital: 1,
           higher_degree: 1,
           department: 1,
-          treatment_area: 1,
+          speciality: 1,
           branch: 1,
           slot: {
             $setDifference: ["$time_slots", "$booked"],
@@ -144,8 +100,6 @@ exports.getTimeSlots = async (req, res) => {
         },
       },
     ]);
-
-    console.log(bookingSlots);
 
     res.send(bookingSlots);
   } catch (error) {
