@@ -1,6 +1,6 @@
 const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
-const moment = require("moment");
+
 
 exports.bookingAppointment = async (req, res) => {
   try {

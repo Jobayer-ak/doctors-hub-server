@@ -1,4 +1,3 @@
-const moment = require("moment");
 const Doctor = require("../models/doctor.model");
 
 // add doctor by admin
@@ -48,7 +47,7 @@ exports.getTimeSlots = async (req, res) => {
 
     const gotDate = new Date(date);
     console.log(date);
-    console.log(gotDate)
+    console.log(gotDate);
 
     const bookingSlots = await Doctor.aggregate([
       {
