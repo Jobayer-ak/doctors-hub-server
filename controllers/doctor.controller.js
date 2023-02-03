@@ -1,3 +1,4 @@
+const moment = require("moment");
 const Doctor = require("../models/doctor.model");
 
 // add doctor by admin
@@ -45,6 +46,10 @@ exports.getTimeSlots = async (req, res) => {
   try {
     const date = req.query.date;
 
+    const gotDate = new Date(date);
+    console.log(date);
+    console.log(gotDate)
+
     const bookingSlots = await Doctor.aggregate([
       {
         $lookup: {
@@ -55,7 +60,7 @@ exports.getTimeSlots = async (req, res) => {
             {
               $match: {
                 $expr: {
-                  $eq: ["$date", date],
+                  $eq: ["$date", gotDate],
                 },
               },
             },
@@ -101,6 +106,8 @@ exports.getTimeSlots = async (req, res) => {
       },
     ]);
 
+    // console.log(bookingSlots);
+
     res.send(bookingSlots);
   } catch (error) {
     res.status(400).json({
@@ -110,3 +117,5 @@ exports.getTimeSlots = async (req, res) => {
     });
   }
 };
+
+// convert ISOString date to date-fns format date

@@ -43,7 +43,7 @@ const bookingSchema = mongoose.Schema(
       required: true,
     },
     date: {
-      type: Number,
+      type: Date,
       required: [true, "Date is required"],
     },
     gender: {
@@ -57,3 +57,6 @@ const bookingSchema = mongoose.Schema(
 const Booking = mongoose.model("Booking", bookingSchema);
 
 module.exports = Booking;
+
+
+// get only date-month-year
