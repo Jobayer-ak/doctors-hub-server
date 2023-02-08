@@ -12,11 +12,11 @@ const Doctor = require("../models/doctor.model");
 exports.getAllUsers = async (req, res) => {
   try {
     // console.log(req.user);
-    const users = await User.find();
-    // console.log(users);
-    res.send(users);
+    const users = await User.find({});
+    console.log(users);
+    res.status(200).send(users);
   } catch (error) {
-    res.send(error);
+    res.status(500).send(error);
   }
 };
 
@@ -62,7 +62,8 @@ exports.login = async (req, res) => {
     }
 
     // verify password
-    const isPassMatch = await bcrypt.compare(password, user.password);
+    // const isPassMatch = await bcrypt.compare(password, user.password);
+    const isPassMatch = user.comparePassword(password, user.password);
 
     if (!isPassMatch) {
       return res.status(400).json({
@@ -216,8 +217,6 @@ exports.logout = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-
 
 // get admin
 exports.getAdmin = async (req, res) => {

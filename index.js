@@ -15,6 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // app.use(express.urlencoded());
 
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -40,10 +41,10 @@ const bookingRoute = require("./routes/booking.route");
 const doctorRoute = require("./routes/doctor.route");
 const { default: jwtDecode } = require("jwt-decode");
 const verifyToken = require("./middlewares/verifyToken");
+const User = require("./models/user.model");
 
 // db connection
 dbConnection();
-
 
 // api calling
 // user Routes

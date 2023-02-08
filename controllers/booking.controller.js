@@ -1,10 +1,50 @@
 const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
 
+exports.allAppointments = async (req, res) => {
+  console.log(5555);
+  try {
+    console.log("hello: ", req.user);
+
+    const appointments = await Booking.find();
+
+    res.status(200).send(appointments);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+// exports.allAppointments = async (req, res) => {
+//   try {
+//     console.log("hello: ",req.user)
+//     if (req.user.role !== "admin") {
+//       return res.status(403).json({
+//         status: "Failed",
+//         message: "You are not permitted to book appointment.",
+//       });
+//     }
+
+//     const appointments = await Booking.find({});
+//     console.log("Appointments: ", appointments);
+//     res.send("Hello");
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: error,
+//     })
+//   }
+// }
 
 exports.bookingAppointment = async (req, res) => {
   try {
     const booking = req.body;
+
+    if (req.user.role === "admin") {
+      return res.status(403).json({
+        status: "Failed",
+        message: "You are not permitted to book appointment.",
+      });
+    }
 
     const bookInfo = {
       doctor_id: booking.doctor_id,
@@ -13,11 +53,7 @@ exports.bookingAppointment = async (req, res) => {
       patient_email: booking.patient_email,
     };
 
-    // console.log(booking);
-
     const exists = await Booking.findOne(bookInfo);
-
-    // console.log(exists)
 
     if (exists) {
       if (
@@ -53,7 +89,9 @@ exports.getBookingDetails = async (req, res) => {
     const email = req.query.patient;
 
     if (email === req.user.email) {
-      const bookings = await Booking.find({ patientEmail: req.user.email });
+      const bookings = await Booking.find({
+        patient_email: req.user.email,
+      }).sort({ date: -1 });
       res.send(bookings);
     } else {
       return res.status(403).send({ message: "Forbidden Access" });
@@ -69,21 +107,45 @@ exports.pendingAppointments = async (req, res) => {
     const email = req.query.patient;
     const date = req.query.date;
 
+    console.log("hello: ", req.user);
+
     if (email === req.user.email) {
+      console.log(email);
       const pending = await Booking.find({
-        email: email,
-        date: { $lte: date },
-      });
+        patient_email: email,
+        date: { $gte: date },
+      }).sort({ date: -1 });
 
-      // console.log(pending);
+      // console.log(pending)
 
-      res.send(pending);
+      res.status(200).send(pending);
     } else {
       return res.status(403).send({ message: "Forbidden Access" });
     }
   } catch (error) {
-    res.send(error);
+    res.status(500).send(error);
   }
 };
 
-// get only date without time
+// delete booking
+exports.singleBookDelete = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const deleteBooking = await Booking.deleteOne({ _id: id });
+
+    if (deleteBooking.deletedCount !== 1) {
+      return res.status(403).json({
+        success: false,
+        message: "Something Went Wrong!",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Deleted",
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};

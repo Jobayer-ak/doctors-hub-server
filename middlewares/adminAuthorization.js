@@ -4,7 +4,7 @@ const adminAuthorization = (req, res, next) => {
   // const token = req.headers.authorization;
   const token = req.cookies.myCookie;
 
-  console.log(token)
+  // console.log(token)
   if (!token) {
     return res.status(401).json({ message: "Authentication invalid" });
   }
@@ -19,7 +19,7 @@ const adminAuthorization = (req, res, next) => {
     }
 
     req.user = decoded;
-
+    // console.log(req.user);
     next();
   });
 };

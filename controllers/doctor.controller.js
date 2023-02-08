@@ -3,7 +3,6 @@ const Doctor = require("../models/doctor.model");
 // add doctor by admin
 exports.addDoctor = async (req, res) => {
   try {
-    // console.log(req.body);
     const email = req.body.email;
 
     const exist = await Doctor.find({ email });
@@ -46,8 +45,6 @@ exports.getTimeSlots = async (req, res) => {
     const date = req.query.date;
 
     const gotDate = new Date(date);
-    console.log(date);
-    console.log(gotDate);
 
     const bookingSlots = await Doctor.aggregate([
       {
@@ -104,8 +101,6 @@ exports.getTimeSlots = async (req, res) => {
         },
       },
     ]);
-
-    // console.log(bookingSlots);
 
     res.send(bookingSlots);
   } catch (error) {
