@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const ObjectId = mongoose.Types.ObjectId;
 
-const bookingSchema = mongoose.Schema(
+const bookingSchema = mongoose.Schema( 
   {
     doctor_name: {
       type: String,
@@ -10,7 +10,7 @@ const bookingSchema = mongoose.Schema(
     },
     doctor_id: [
       {
-        type: ObjectId,
+        type: ObjectId, 
         ref: "Doctor",
       },
     ],

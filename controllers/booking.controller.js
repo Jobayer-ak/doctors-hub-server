@@ -1,11 +1,12 @@
 const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
+const { sendEmail } = require("../utils/sendEmail");
 
 exports.allAppointments = async (req, res) => {
   try {
     const appointments = await Booking.find({});
 
-    console.log("ALl apointments: ", appointments);
+    // console.log("ALl apointments: ", appointments);
 
     res.status(200).send(appointments);
   } catch (error) {
@@ -38,6 +39,15 @@ exports.bookingAppointment = async (req, res) => {
   try {
     const booking = req.body;
 
+    const {
+      doctor_name,
+      patient_name,
+      patient_email,
+      patient_contact_number,
+      slot,
+      date,
+    } = req.body;
+
     if (req.user.role === "admin") {
       return res.status(403).json({
         status: "Failed",
@@ -69,6 +79,16 @@ exports.bookingAppointment = async (req, res) => {
     } else {
       const booked = await createBookingService(req.body);
 
+      // send email to user
+      sendEmail(
+        doctor_name,
+        patient_name,
+        patient_email,
+        patient_contact_number,
+        slot,
+        date
+      );
+
       return res.send({
         success: true,
         message: "Successfully Booked Your Appointment",
@@ -92,7 +112,7 @@ exports.getBookingDetails = async (req, res) => {
         patient_email: req.user.email,
       }).sort({ date: -1 });
 
-      console.log("All bookings: ", bookings);
+      // console.log("All bookings: ", bookings);
 
       res.status(200).send(bookings);
     } else {
@@ -115,7 +135,7 @@ exports.pendingAppointments = async (req, res) => {
         date: { $gte: date },
       }).sort({ date: -1 });
 
-      console.log(pending)
+      // console.log(pending);
 
       res.status(200).send(pending);
     } else {
@@ -140,7 +160,7 @@ exports.singleBookDelete = async (req, res) => {
       });
     }
 
-    console.log(deleteBooking);
+    // console.log(deleteBooking);
 
     res.status(200).json({
       success: true,
