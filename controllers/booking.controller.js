@@ -2,11 +2,10 @@ const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
 
 exports.allAppointments = async (req, res) => {
-  console.log(5555);
   try {
-    console.log("hello: ", req.user);
+    const appointments = await Booking.find({});
 
-    const appointments = await Booking.find();
+    console.log("ALl apointments: ", appointments);
 
     res.status(200).send(appointments);
   } catch (error) {
@@ -92,7 +91,10 @@ exports.getBookingDetails = async (req, res) => {
       const bookings = await Booking.find({
         patient_email: req.user.email,
       }).sort({ date: -1 });
-      res.send(bookings);
+
+      console.log("All bookings: ", bookings);
+
+      res.status(200).send(bookings);
     } else {
       return res.status(403).send({ message: "Forbidden Access" });
     }
@@ -107,16 +109,13 @@ exports.pendingAppointments = async (req, res) => {
     const email = req.query.patient;
     const date = req.query.date;
 
-    console.log("hello: ", req.user);
-
     if (email === req.user.email) {
-      console.log(email);
       const pending = await Booking.find({
         patient_email: email,
         date: { $gte: date },
       }).sort({ date: -1 });
 
-      // console.log(pending)
+      console.log(pending)
 
       res.status(200).send(pending);
     } else {
@@ -140,6 +139,8 @@ exports.singleBookDelete = async (req, res) => {
         message: "Something Went Wrong!",
       });
     }
+
+    console.log(deleteBooking);
 
     res.status(200).json({
       success: true,

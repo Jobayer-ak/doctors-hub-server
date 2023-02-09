@@ -11,9 +11,8 @@ const Doctor = require("../models/doctor.model");
 
 exports.getAllUsers = async (req, res) => {
   try {
-    // console.log(req.user);
     const users = await User.find({});
-    console.log(users);
+    // console.log(users);
     res.status(200).send(users);
   } catch (error) {
     res.status(500).send(error);

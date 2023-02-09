@@ -39,6 +39,29 @@ exports.getAllDoctor = async (req, res) => {
   }
 };
 
+// delete single doctor
+exports.deleteSingleDoctor = async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const deleteDoctor = await Doctor.deleteOne({ email: email });
+
+    if (deleteDoctor.deletedCount !== 1) {
+      return res.status(403).json({
+        success: false,
+        message: "Something Went Wrong!",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Deleted",
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 // get doctors checkup slots
 exports.getTimeSlots = async (req, res) => {
   try {
@@ -111,5 +134,3 @@ exports.getTimeSlots = async (req, res) => {
     });
   }
 };
-
-// convert ISOString date to date-fns format date
