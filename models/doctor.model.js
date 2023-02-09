@@ -17,6 +17,8 @@ const doctorSchema = mongoose.Schema(
     name: {
       type: String,
       required: true,
+      minLength: [3, "Name should be at least 3 characters"],
+      maxLength: [40, "Name is too large"],
     },
     email: {
       type: String,
@@ -37,38 +39,48 @@ const doctorSchema = mongoose.Schema(
     address: {
       type: String,
       required: true,
+      minLength: [3, "Name should be at least 3 characters"],
+      maxLength: [60, "Name is too large"],
     },
     nid: {
       type: String,
       required: true,
+      trimg: true,
     },
     gender: {
       type: String,
       required: true,
+      trimg: true,
     },
     working_hospital: {
       type: String,
       required: true,
+      trimg: true,
     },
     speciality: {
       type: String,
       required: true,
+      trimg: true,
     },
     department: {
       type: String,
       required: true,
+      trimg: true,
     },
     higher_degree: {
       type: String,
       required: true,
+      trimg: true,
     },
     branch: {
       type: String,
       required: true,
+      trimg: true,
     },
     blood_group: {
       type: String,
       required: true,
+      trimg: true,
     },
     time_slots: {
       type: Array,

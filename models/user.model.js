@@ -60,11 +60,23 @@ const userSchema = new Schema(
       type: String,
       enum: {
         values: ["user", "admin"],
-        message: "role value cannot be {VALUE}",
+        message: "Role value cannot be {VALUE}",
       },
       default: "user",
     },
-    refreshToken: [String],
+    mobile: {
+      type: String,
+      validate: [
+        validator.isMobilePhone,
+        "Please provide a valid contact number!",
+      ],
+      required: true,
+    },
+    gender: {
+      type: String,
+      required: [true, "Select Gender"],
+      trim: true,
+    },
   },
   {
     timestamps: true,
@@ -75,6 +87,9 @@ userSchema.pre("save", function (next) {
   const hash = bcrypt.hashSync(this.password, saltRounds);
 
   this.password = hash;
+
+  console.log(this.confirmPassword);
+  // console.log(this.confirmPassword);
   this.confirmPassword = undefined;
 
   next();

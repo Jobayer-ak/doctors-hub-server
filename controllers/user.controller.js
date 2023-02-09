@@ -22,6 +22,8 @@ exports.getAllUsers = async (req, res) => {
 // signup
 exports.signup = async (req, res) => {
   try {
+    console.log(req.body);
+
     const user = await signUpService(req.body);
 
     res.status(200).json({
