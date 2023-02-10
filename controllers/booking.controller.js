@@ -1,6 +1,6 @@
 const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
-const { sendEmail } = require("../utils/sendEmail");
+const { sendMail } = require("../utils/sendEmail");
 
 exports.allAppointments = async (req, res) => {
   try {
@@ -79,15 +79,24 @@ exports.bookingAppointment = async (req, res) => {
     } else {
       const booked = await createBookingService(req.body);
 
+      const mailInfo = {
+        email: patient_email,
+        subject: "Appointment Confirmation Email",
+        html: `
+        <div>
+        <h1>Hello ${patient_name}</h1>
+        <h3>Your Appointment for ${doctor_name} is confirmed.</h3>
+        <p>Looking forward to seeing you on ${date} at ${slot}</p>
+
+        <h3>Our Address</h3>
+        <p>Baghmara, Charapara</p>
+        <p>Mymensingh</p>
+        </div>
+      `,
+      };
+
       // send email to user
-      sendEmail(
-        doctor_name,
-        patient_name,
-        patient_email,
-        patient_contact_number,
-        slot,
-        date
-      );
+      sendMail(mailInfo);
 
       return res.send({
         success: true,
