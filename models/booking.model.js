@@ -50,6 +50,10 @@ const bookingSchema = mongoose.Schema(
       type: String,
       required: [true, "Gender is required"],
     },
+    branch: {
+      type: String,
+      required: [true, "Branch name is required!"],
+    }
   },
   { timestamps: true }
 );

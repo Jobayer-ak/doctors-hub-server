@@ -1,12 +1,11 @@
 const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
-const { sendMail } = require("../utils/sendEmail");
+const { sendMail } = require("../utils/email");
 
+// get all apointments
 exports.allAppointments = async (req, res) => {
   try {
     const appointments = await Booking.find({});
-
-    // console.log("ALl apointments: ", appointments);
 
     res.status(200).send(appointments);
   } catch (error) {
@@ -14,27 +13,7 @@ exports.allAppointments = async (req, res) => {
   }
 };
 
-// exports.allAppointments = async (req, res) => {
-//   try {
-//     console.log("hello: ",req.user)
-//     if (req.user.role !== "admin") {
-//       return res.status(403).json({
-//         status: "Failed",
-//         message: "You are not permitted to book appointment.",
-//       });
-//     }
-
-//     const appointments = await Booking.find({});
-//     console.log("Appointments: ", appointments);
-//     res.send("Hello");
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error,
-//     })
-//   }
-// }
-
+// create booking 
 exports.bookingAppointment = async (req, res) => {
   try {
     const booking = req.body;
@@ -46,6 +25,7 @@ exports.bookingAppointment = async (req, res) => {
       patient_contact_number,
       slot,
       date,
+      branch,
     } = req.body;
 
     if (req.user.role === "admin") {
@@ -79,14 +59,16 @@ exports.bookingAppointment = async (req, res) => {
     } else {
       const booked = await createBookingService(req.body);
 
+
+      // email html template
       const mailInfo = {
         email: patient_email,
         subject: "Appointment Confirmation Email",
         html: `
         <div>
-        <h1>Hello ${patient_name}</h1>
+        <h2>Hello ${patient_name}</h2>
         <h3>Your Appointment for ${doctor_name} is confirmed.</h3>
-        <p>Looking forward to seeing you on ${date} at ${slot}</p>
+        <p>Looking forward to seeing you on ${date} at ${slot} in ${branch} branch.</p>
 
         <h3>Our Address</h3>
         <p>Baghmara, Charapara</p>

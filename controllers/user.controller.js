@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-// const { response } = require("express");
 const jwt = require("jsonwebtoken");
 const {
   signUpService,
@@ -8,6 +7,7 @@ const {
 const { generateToken } = require("../utils/token");
 const User = require("../models/user.model");
 const Doctor = require("../models/doctor.model");
+const { sendMail } = require("../utils/email");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -22,9 +22,34 @@ exports.getAllUsers = async (req, res) => {
 // signup
 exports.signup = async (req, res) => {
   try {
-    console.log(req.body);
+    const { name, email } = req.body;
 
     const user = await signUpService(req.body);
+
+    const token = user.generateConfirmationToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    const url = req.protocol + "://" + req.get("host") + req.originalUrl;
+
+    // email html template
+    const mailInfo = {
+      email: email,
+      subject: "Verify Your Account",
+      html: `
+      <div style="padding:10px; text-align: center;">
+      <h2>Hello ${name}</h2>
+      <p>Thank you for creating your account. Please confirm your account.</p>
+      <a href="${url}/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; padding:5px 4px">Please Confirm Your Email</button></a>
+     
+
+      
+      </div>
+    `,
+    };
+
+    // send email to user
+    sendMail(mailInfo);
 
     res.status(200).json({
       status: "Success",
@@ -34,6 +59,45 @@ exports.signup = async (req, res) => {
     res.status(500).json({
       status: "Failed",
       message: error.message,
+    });
+  }
+};
+
+exports.confirmEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await User.findOne({ confirmationToken: token });
+
+    if (!user) {
+      return res.status(403).json({
+        status: "Fail",
+        error: "Invalid Token",
+      });
+    }
+
+    const expired = new Date() > new Date(user.confirmationTokenExpires);
+
+    if (expired) {
+      return res.status(401).json({
+        status: "Failed",
+        error: "User Confirmation Token Expired",
+      });
+    }
+    user.status = "active";
+    user.confirmationToken = undefined;
+    user.confirmationTokenExpires = undefined;
+
+    user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: "Success",
+      message: "Successfully activated your account",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      error,
     });
   }
 };
@@ -63,7 +127,6 @@ exports.login = async (req, res) => {
     }
 
     // verify password
-    // const isPassMatch = await bcrypt.compare(password, user.password);
     const isPassMatch = user.comparePassword(password, user.password);
 
     if (!isPassMatch) {
@@ -89,117 +152,6 @@ exports.login = async (req, res) => {
         token,
         others,
       });
-
-    // const options = {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: "None",
-    //   maxAge: 50000,
-    //   path: "/",
-    // };
-
-    // res.cookie("access_token", token, options).json({
-    //   status: true,
-    //   message: "Successfully loggedin!",
-    //   others,
-    //   token,
-    // });
-
-    // console.log(req.cookies);
-
-    // res.cookie("jwt", newRefreshToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: "None",
-    //     maxAge: 24 * 60 * 60 * 1000,
-    //   });
-
-    // if (match) {
-    //   console.log("matched: " + match);
-    //   const roles = user.role;
-
-    //   // const token = generateToken(user);
-
-    //   const accessToken = jwt.sign(
-    //     {
-    //       UserInfo: {
-    //         username: user.email,
-    //         roles: roles,
-    //       },
-    //     },
-    //     process.env.TOKEN_SECRET,
-    //     { expiresIn: "10s" }
-    //   );
-
-    //   // create refresh token
-    //   const newRefreshToken = jwt.sign(
-    //     { email: user.email },
-    //     process.env.REFRESH_TOKEN_SECRET,
-    //     { expiresIn: "1d" }
-    //   );
-
-    //   // change to let keyword
-    //   let newRefreshTokenArray = !cookies?.jwt
-    //     ? user.refreshToken
-    //     : user.refreshToken.filter((rt) => rt !== cookies.jwt);
-
-    //   if (cookies?.jwt) {
-    //     const refreshToken = cookies.jwt;
-    //     const foundToken = await User.findOne({ refreshToken }).exec();
-
-    //     // detected refresh token reuse
-    //     if (!foundToken) {
-    //       console.log("attemted refresh token reuse at login");
-    //       // clear out all previous refresh tokens
-    //       newRefreshTokenArray = [];
-    //     }
-
-    //     res.clearCookie("jwt", {
-    //       httpOnly: true,
-    //       sameSite: "None",
-    //       secure: true,
-    //     });
-    //   }
-
-    //   // Saving refreshToken with current user
-    //   user.refreshToken = [...newRefreshTokenArray, newRefreshToken];
-    //   const result = await user.save();
-    //   // const query = { email: user.email };
-    //   // const result = await User.findOneAndUpdate(query, {
-    //   //   refreshToken: [...newRefreshTokenArray, newRefreshToken],
-    //   // });
-
-    //   console.log(result);
-    //   console.log(roles);
-
-    //   // Creates Secure Cookie with refresh token
-    //   res.cookie("jwt", newRefreshToken, {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: "None",
-    //     maxAge: 24 * 60 * 60 * 1000,
-    //   });
-
-    //   // Send authorization roles and access token to user
-    //   res.json({ roles, accessToken });
-    // }
-
-    //is password valid?
-    // bcrypt.compare(password, user.password, function (err, result) {
-    //   if (result === false) {
-    //     return res.status(401).json({
-    //       status: "Failed",
-    //       message: "Password is not correct!",
-    //     });
-    //   }
-    // });
-
-    // evaluate password
-    // generate token
-
-    // const token = generateToken(user);
-
-    // res.cookie("token", token, { httpOnly: true });
   } catch (error) {
     res.status(500).json({
       status: "Failed",
