@@ -9,6 +9,7 @@ router.get("/admin/users", userController.getAllUsers);
 router.get("/logout", userController.logout);
 router.post("/signup", userController.signup);
 router.post("/login", userController.login);
+router.post("/forget-password", userController.forgetPasswordEmail);
 router.get(
   "/admin/:email",
   verifyToken,

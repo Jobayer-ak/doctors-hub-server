@@ -85,6 +85,8 @@ const userSchema = new Schema(
     },
     confirmationToken: String,
     confirmationTokenExpires: Date,
+    forgetToken: String,
+    forgetTokenExpires: Date,
   },
   {
     timestamps: true,

@@ -127,7 +127,7 @@ exports.login = async (req, res) => {
 
       date.setDate(date.getDate() + 1);
 
-      const url =`http://localhost:5000/api/v1/signup/confirmation/${token}`;
+      const url = `http://localhost:5000/api/v1/signup/confirmation/${token}`;
 
       // email html template
       const mailInfo = {
@@ -229,6 +229,67 @@ exports.getAdmin = async (req, res) => {
     const result = await User.findOne(email);
     // console.log(result);
     res.send(result);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+// forget passwor
+exports.forgetPasswordEmail = async (req, res) => {
+  try {
+    const email = req.body;
+
+    const user = await User.findOne(email);
+
+    if (!user) {
+      return res.status(404).json({
+        success: "Failed",
+        message: `There is no user!`,
+      });
+    }
+
+    if (user.confirmationToken) {
+      return res.status(403).json({
+        success: "Failed",
+        message: "You didn't activate your account yet.",
+      });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+
+    const date = new Date();
+
+    date.setDate(date.getDate() + 1);
+
+    user.forgetToken = token;
+    user.forgetTokenExpires = date;
+
+    await user.save({ validateBeforeSave: false });
+
+    const url = req.protocol + "://" + req.get("host") + req.originalUrl;
+
+    // email html template
+    const mailInfo = {
+      email: user.email,
+      subject: "Reset Password",
+      html: `
+      <div style="padding:10px; text-align: center;">
+      <h2>Hello ${user.name}</h2>
+      <p>Reset Your Password From Doctor's Hub </p>
+      <a href="${url}/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Reset Passwordl</button></a>
+      </div>
+    `,
+    };
+
+    // send email to user
+    sendMail(mailInfo);
+
+    res.status(200).json({
+      status: "Success",
+      message: "Reset password email has been sent.",
+    });
   } catch (error) {
     res.status(500).json({
       message: error.message,
