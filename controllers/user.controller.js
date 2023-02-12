@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const {
   signUpService,
   findByEmailService,
@@ -40,10 +41,7 @@ exports.signup = async (req, res) => {
       <div style="padding:10px; text-align: center;">
       <h2>Hello ${name}</h2>
       <p>Thank you for creating your account. Please confirm your account.</p>
-      <a href="${url}/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; padding:5px 4px">Please Confirm Your Email</button></a>
-     
-
-      
+      <a href="${url}/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
       </div>
     `,
     };
@@ -66,6 +64,8 @@ exports.signup = async (req, res) => {
 exports.confirmEmail = async (req, res) => {
   try {
     const { token } = req.params;
+
+    console.log("con: ", token);
 
     const user = await User.findOne({ confirmationToken: token });
 
@@ -118,6 +118,52 @@ exports.login = async (req, res) => {
     // load user with email
     const user = await findByEmailService(email);
 
+    if (user.status === "inactive") {
+      console.log(user.status);
+
+      const token = crypto.randomBytes(32).toString("hex");
+
+      const date = new Date();
+
+      date.setDate(date.getDate() + 1);
+
+      const url =`http://localhost:5000/api/v1/signup/confirmation/${token}`;
+
+      // email html template
+      const mailInfo = {
+        email: email,
+        subject: "Verify Your Account",
+        html: `
+        <div style="padding:10px; text-align: center;">
+        <h2>Hello ${user.name}</h2>
+        <p>Thank you for creating your account. Please confirm your account.</p>
+        <a href="${url}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
+        </div>
+      `,
+      };
+
+      console.log(`${url}/confirmation/${token}`);
+
+      // send email to user
+      sendMail(mailInfo);
+
+      const filter = { email: user.email };
+      const update = {
+        confirmationToken: token,
+        confirmationTokenExpires: date,
+      };
+
+      await User.findOneAndUpdate(filter, update);
+
+      return res.status(401).json({
+        status: "Failed",
+        message:
+          "Again send confirmation email to verify your accout. Please check your email.",
+      });
+    }
+
+    // console.log("user: ", user);
+
     if (!user) {
       return res.status(401).json({
         // 401 unauthorized
@@ -127,7 +173,11 @@ exports.login = async (req, res) => {
     }
 
     // verify password
-    const isPassMatch = user.comparePassword(password, user.password);
+    const isPassMatch = (password, hash) => {
+      const isPasswordValid = bcrypt.compareSync(password, hash); // true
+      return isPasswordValid;
+    };
+    // const isPassMatch = await user.comparePassword(password, user.password);
 
     if (!isPassMatch) {
       return res.status(400).json({

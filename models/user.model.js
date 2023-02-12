@@ -103,10 +103,10 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-userSchema.methods.comparePassword = function (password, hash) {
-  const isPasswordValid = bcrypt.compareSync(password, hash); // true
-  return isPasswordValid;
-};
+// userSchema.methods.comparePassword = function (password, hash) {
+//   const isPasswordValid = bcrypt.compareSync(password, hash); // true
+//   return isPasswordValid;
+// };
 
 userSchema.methods.generateConfirmationToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
