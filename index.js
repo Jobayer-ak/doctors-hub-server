@@ -9,7 +9,8 @@ const port = process.env.PORT || 5001;
 const app = express();
 // cookie parser
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended : false }));
 
 // middlewares
 app.use(express.json());

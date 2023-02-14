@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const crypto = require("crypto");
 
@@ -93,22 +93,38 @@ const userSchema = new Schema(
   }
 );
 
+
 userSchema.pre("save", function (next) {
-  const hash = bcrypt.hashSync(this.password, saltRounds);
+  const user = this
 
-  this.password = hash;
+  if (this.isModified("password")) {
+    bcrypt.genSalt(10, function (saltError, salt) {
+      if (saltError) {
+        return next(saltError)
+      } else {
+        bcrypt.hash(user.password, salt, function(hashError, hash) {
+          if (hashError) {
+            return next(hashError)
+          }
 
-  console.log(this.confirmPassword);
-  // console.log(this.confirmPassword);
-  this.confirmPassword = undefined;
+          user.password = hash;
+          user.confirmPassword = undefined;
+          next()
+        })
+      }
+    })
+  } else {
+    return next()
+  }
+})
 
-  next();
-});
+userSchema.methods.comparePassword = function(password, hash) {
+  const isPasswordValid = bcrypt.compareSync(password, hash);
+  // console.log("Chh: ", isPasswordValid);
+  return isPasswordValid;
+ 
+}
 
-// userSchema.methods.comparePassword = function (password, hash) {
-//   const isPasswordValid = bcrypt.compareSync(password, hash); // true
-//   return isPasswordValid;
-// };
 
 userSchema.methods.generateConfirmationToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
@@ -127,3 +143,4 @@ userSchema.methods.generateConfirmationToken = function () {
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
+
