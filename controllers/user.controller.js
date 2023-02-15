@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-// const bcrypt = require("bcryptjs");
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const {
   signUpService,
@@ -173,7 +173,7 @@ exports.login = async (req, res) => {
 
     // verify password
     const isPasswordValid = user.comparePassword(password, user.password);
-    // console.log(isPasswordValid);
+
     if (!isPasswordValid) {
       return res.status(403).json({
         status: "Failed",
@@ -232,111 +232,119 @@ exports.getAdmin = async (req, res) => {
 };
 
 // forget passwor
-// exports.forgetPasswordEmail = async (req, res) => {
-//   try {
-//     const email = req.body;
+exports.forgetPasswordEmail = async (req, res) => {
+  try {
+    const email = req.body;
 
-//     const user = await User.findOne(email);
+    const user = await User.findOne(email);
 
-//     if (!user) {
-//       return res.status(404).json({
-//         success: "Failed",
-//         message: `There is no user!`,
-//       });
-//     }
+    if (!user) {
+      return res.status(404).json({
+        success: "Failed",
+        message: `There is no user!`,
+      });
+    }
 
-//     if (user.confirmationToken) {
-//       return res.status(403).json({
-//         success: "Failed",
-//         message: "You didn't activate your account yet.",
-//       });
-//     }
+    if (user.confirmationToken) {
+      return res.status(403).json({
+        success: "Failed",
+        message: "You didn't activate your account yet.",
+      });
+    }
 
-//     const token = crypto.randomBytes(32).toString("hex");
+    const token = crypto.randomBytes(32).toString("hex");
 
-//     const date = new Date();
+    const date = new Date();
 
-//     date.setDate(date.getDate() + 1);
+    date.setDate(date.getDate() + 1);
 
-//     user.forgetToken = token;
-//     user.forgetTokenExpires = date;
+    user.forgetToken = token;
+    user.forgetTokenExpires = date;
 
-//     await user.save({ validateBeforeSave: false });
+    await user.save({ validateBeforeSave: false });
 
-//     const url = "http://localhost:3000/user/set-new-password";
+    const url = "http://localhost:3000/user/set-new-password";
 
-//     // email html template
-//     const mailInfo = {
-//       email: user.email,
-//       subject: "Reset Password",
-//       html: `
-//       <div style="padding:10px; text-align: center;">
-//       <h2>Hello ${user.name}</h2>
-//       <p>Reset Your Password From Doctor's Hub </p>
-//       <a href="${url}?token=${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Reset Passwordl</button></a>
-//       </div>
-//     `,
-//     };
+    // email html template
+    const mailInfo = {
+      email: user.email,
+      subject: "Reset Password",
+      html: `
+      <div style="padding:10px; text-align: center;">
+      <h2>Hello ${user.name}</h2>
+      <p>Reset Your Password From Doctor's Hub </p>
+      <a href="${url}?token=${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Reset Passwordl</button></a>
+      </div>
+    `,
+    };
 
-//     // send email to user
-//     sendMail(mailInfo);
+    // send email to user
+    sendMail(mailInfo);
 
-//     res.status(200).json({
-//       status: "Success",
-//       message: "Reset password email has been sent.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// };
+    res.status(200).json({
+      status: "Success",
+      message: "Reset password email has been sent.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
-// exports.setNewPassword = async (req, res) => {
-//   try {
-//     const { ptoken } = req.params;
-//     const { pass } = req.body;
+exports.setNewPassword = async (req, res) => {
+  try {
+    const { ptoken } = req.params;
+    const { pass } = req.body;
 
-//     //
+    console.log("ptoken: ", ptoken);
+    console.log("pass: ", pass);
 
-//     console.log("con: ", ptoken);
+    if (!pass || !ptoken) {
+      return res.status(403).json({
+        status: "Fail",
+        message: "New password is required!",
+      });
+    }
 
-//     const user = await User.findOne({ forgetToken: ptoken });
+    const user = await User.findOne({ forgetToken: ptoken });
 
-//     if (!user) {
-//       return res.status(403).json({
-//         status: "Fail",
-//         error: "Invalid Token",
-//       });
-//     }
+    if (!user) {
+      return res.status(403).json({
+        status: "Fail",
+        error: "Invalid Token",
+      });
+    }
 
-//     // console.log(user);
+    const expired = new Date() > new Date(user.forgetTokenExpires);
 
-//     const expired = new Date() > new Date(user.forgetTokenExpires);
+    if (expired) {
+      return res.status(401).json({
+        status: "Failed",
+        error: "User Confirmation Token is Expired",
+      });
+    }
 
-//     if (expired) {
-//       return res.status(401).json({
-//         status: "Failed",
-//         error: "User Confirmation Token is Expired",
-//       });
-//     }
+    const hash = bcrypt.hashSync(pass, saltRounds);
 
-//     const hash = bcrypt.hashSync(pass, saltRounds);
-//     console.log("hsh: ",hash)
-//     user.password = hash;
+    const upp = await User.findOneAndUpdate(
+      { forgetToken: ptoken },
+      { password: hash }
+    );
 
-//     user.forgetToken = undefined;
-//     user.forgetTokenExpires = undefined;
 
-//     user.save({ validateBeforeSave: false });
+    user.forgetToken = undefined;
+    user.forgetTokenExpires = undefined;
 
-//     res.status(200).json({
-//       status: "Success",
-//       message: "Your password has been reset.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       message: error.message,
-//     });
-//   }
-// };
+    user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: "Success",
+      message: "Your new password has been set.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
