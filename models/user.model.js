@@ -83,6 +83,8 @@ const userSchema = new Schema(
       default: "inactive",
       enum: ["active", "inactive", "blocked"],
     },
+    address: String,
+    imageURL: String,
     confirmationToken: String,
     confirmationTokenExpires: Date,
     forgetToken: String,
@@ -93,38 +95,35 @@ const userSchema = new Schema(
   }
 );
 
-
 userSchema.pre("save", function (next) {
-  const user = this
+  const user = this;
 
   if (this.isModified("password")) {
     bcrypt.genSalt(10, function (saltError, salt) {
       if (saltError) {
-        return next(saltError)
+        return next(saltError);
       } else {
-        bcrypt.hash(user.password, salt, function(hashError, hash) {
+        bcrypt.hash(user.password, salt, function (hashError, hash) {
           if (hashError) {
-            return next(hashError)
+            return next(hashError);
           }
 
           user.password = hash;
           user.confirmPassword = undefined;
-          next()
-        })
+          next();
+        });
       }
-    })
+    });
   } else {
-    return next()
+    return next();
   }
-})
+});
 
-userSchema.methods.comparePassword = function(password, hash) {
+userSchema.methods.comparePassword = function (password, hash) {
   const isPasswordValid = bcrypt.compareSync(password, hash);
   // console.log("Chh: ", isPasswordValid);
   return isPasswordValid;
- 
-}
-
+};
 
 userSchema.methods.generateConfirmationToken = function () {
   const token = crypto.randomBytes(32).toString("hex");
@@ -144,3 +143,4 @@ const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 
+// post formdata with axios

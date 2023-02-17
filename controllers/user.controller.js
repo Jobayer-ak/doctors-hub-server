@@ -63,11 +63,10 @@ exports.signup = async (req, res) => {
   }
 };
 
+// confirm email
 exports.confirmEmail = async (req, res) => {
   try {
     const { token } = req.params;
-
-    console.log("con: ", token);
 
     const user = await User.findOne({ confirmationToken: token });
 
@@ -121,8 +120,6 @@ exports.login = async (req, res) => {
     const user = await findByEmailService(email);
 
     if (user.status === "inactive") {
-      console.log(user.status);
-
       const token = crypto.randomBytes(32).toString("hex");
 
       const date = new Date();
@@ -292,18 +289,16 @@ exports.forgetPasswordEmail = async (req, res) => {
   }
 };
 
+// set new password
 exports.setNewPassword = async (req, res) => {
   try {
     const { ptoken } = req.params;
     const { pass } = req.body;
 
-    console.log("ptoken: ", ptoken);
-    console.log("pass: ", pass);
-
     if (!pass || !ptoken) {
       return res.status(403).json({
         status: "Fail",
-        message: "New password is required!",
+        error: "New password is required!",
       });
     }
 
@@ -312,7 +307,7 @@ exports.setNewPassword = async (req, res) => {
     if (!user) {
       return res.status(403).json({
         status: "Fail",
-        error: "Invalid Token",
+        error: "You already set new password!",
       });
     }
 
@@ -332,7 +327,6 @@ exports.setNewPassword = async (req, res) => {
       { password: hash }
     );
 
-
     user.forgetToken = undefined;
     user.forgetTokenExpires = undefined;
 
@@ -345,6 +339,73 @@ exports.setNewPassword = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: error.message,
+    });
+  }
+};
+
+// user setting
+exports.updateProfile = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const userData = req.body;
+
+    if (!email || !userData) {
+      return res.status(403).json({
+        status: "Failed",
+        message: "Please fill up all required fields!",
+      });
+    }
+
+    const updateUser = await User.updateOne({ email: email }, userData);
+
+    if (!updateUser.modifiedCount) {
+      return res.status(304).json({
+        status: "Failed",
+        message: "Your profile information is not updated",
+      });
+    }
+
+    res.status(200).json({
+      status: "Success",
+      message: "Successfully Updated Your Profile!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      message: "Something went wrong",
+      error,
+    });
+  }
+};
+
+// user details
+exports.userDetails = async (req, res) => {
+  try {
+    const { email } = req.params;
+    if (!email) {
+      return res.status(401).json({ message: "Please provide email" });
+    }
+    const user = await User.findOne({ email: email }).select({
+      password: 0,
+      role: 0,
+      status: 0,
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "Failed",
+        error: "There is no user!",
+      });
+    }
+
+    res.status(200).json({
+      status: "Success",
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "Failed",
+      error: err,
     });
   }
 };
