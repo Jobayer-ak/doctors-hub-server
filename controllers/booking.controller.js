@@ -13,7 +13,28 @@ exports.allAppointments = async (req, res) => {
   }
 };
 
-// create booking 
+// specific booking appointment
+exports.singleAppointment = async (req, res) => {
+  try {
+    const id  = req.params.id;
+    console.log(id);
+
+    const result = await Booking.findOne({ _id: id });
+    // console.log(result);
+
+    res.status(200).json({
+      status: "Success",
+      appointment: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "Failed",
+      error,
+    });
+  }
+};
+
+// create booking
 exports.bookingAppointment = async (req, res) => {
   try {
     const booking = req.body;
@@ -58,7 +79,6 @@ exports.bookingAppointment = async (req, res) => {
       }
     } else {
       const booked = await createBookingService(req.body);
-
 
       // email html template
       const mailInfo = {

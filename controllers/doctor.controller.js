@@ -98,6 +98,7 @@ exports.getTimeSlots = async (req, res) => {
           department: 1,
           speciality: 1,
           time_slots: 1,
+          fee: 1,
           branch: 1,
           booked: {
             $map: {
@@ -118,6 +119,7 @@ exports.getTimeSlots = async (req, res) => {
           department: 1,
           speciality: 1,
           branch: 1,
+          fee:1,
           slot: {
             $setDifference: ["$time_slots", "$booked"],
           },
