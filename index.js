@@ -36,7 +36,6 @@ app.use(function (req, res, next) {
 });
 
 // routes
-const slotRoute = require("./routes/slot.route");
 const userRoute = require("./routes/user.route.js");
 const bookingRoute = require("./routes/booking.route");
 const doctorRoute = require("./routes/doctor.route");
@@ -54,8 +53,6 @@ app.use("/api/v1/", userRoute);
 // doctors route
 app.use("/api/v1/", doctorRoute);
 
-// slots route
-app.use("/api/v1/", slotRoute);
 
 // booking routes
 app.use("/api/v1/", bookingRoute);
