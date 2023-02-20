@@ -1,14 +1,25 @@
 {
   "name": "doctors-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Docot's Hub - a online doctors appointment booking website",
   "main": "index.js",
+  "engines": {
+    "node": "18.x"
+  },
+  "keywords": [
+    "MERN",
+    "Node",
+    "Express",
+    "MongoDB",
+    "Mongoose",
+    "JWT",
+    "MVC"
+  ],
+  "author": "Md. Jobayer Akanda",
   "scripts": {
     "start-dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.0",
@@ -19,7 +30,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
-    "google-auth-library": "^8.7.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "mongoose": "^6.6.4",
