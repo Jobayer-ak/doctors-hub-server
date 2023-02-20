@@ -1,6 +1,7 @@
 const Booking = require("../models/booking.model");
 const { createBookingService } = require("../services/booking.service");
 const { sendMail } = require("../utils/email");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // get all apointments
 exports.allAppointments = async (req, res) => {
@@ -16,8 +17,7 @@ exports.allAppointments = async (req, res) => {
 // specific booking appointment
 exports.singleAppointment = async (req, res) => {
   try {
-    const id  = req.params.id;
-    console.log(id);
+    const id = req.params.id;
 
     const result = await Booking.findOne({ _id: id });
     // console.log(result);
@@ -180,4 +180,23 @@ exports.singleBookDelete = async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
+};
+
+// payment intent
+exports.paymentIntent = async (req, res) => {
+  try {
+    const bookFee = req.body;
+    const fee = bookFee.fee;
+    const amount = fee * 100;
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: "usd",
+      payment_method_types: ["card"],
+    });
+
+    res.status(200).json({
+      status: "Success",
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {}
 };
