@@ -38,12 +38,12 @@ exports.signup = async (req, res) => {
     // email html template
     const mailInfo = {
       email: email,
-      subject: "Verify Your Account",
+      subject: "Verify Your Doctor's Hub Account",
       html: `
       <div style="padding:10px; text-align: center;">
       <h2>Hello ${name}</h2>
       <p>Thank you for creating your account on Doctor's Hub. Please confirm your Doctor's Hub account.</p>
-      <a href="${url}/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
+      <a href="${url}/signup/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
       </div>
     `,
     };
