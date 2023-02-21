@@ -23,14 +23,12 @@ app.use(
       "https://sparkling-pegasus-56a187.netlify.app",
     ],
     credentials: true,
-    methods: ["GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS"],
+    methods: ["GET", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Access-Control-Allow-Origin",
       "Content-Type",
-      // "application/json;charset=UTF-8",
-      // "Authorization",
+      "application/json;charset=UTF-8",
     ],
-    // exposedHeaders: ["set-cookie"],
   })
 );
 

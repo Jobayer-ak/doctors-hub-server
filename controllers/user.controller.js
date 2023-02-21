@@ -362,7 +362,7 @@ exports.updateProfile = async (req, res) => {
 
     const updateUser = await User.updateOne({ email: email }, userData);
 
-    console.log(first)
+    console.log(updateUser);
 
     if (!updateUser.modifiedCount) {
       return res.status(304).json({
