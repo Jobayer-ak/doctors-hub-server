@@ -362,6 +362,8 @@ exports.updateProfile = async (req, res) => {
 
     const updateUser = await User.updateOne({ email: email }, userData);
 
+    console.log(first)
+
     if (!updateUser.modifiedCount) {
       return res.status(304).json({
         status: "Failed",
@@ -413,3 +415,5 @@ exports.userDetails = async (req, res) => {
     });
   }
 };
+
+// useMutation of react query with axios 

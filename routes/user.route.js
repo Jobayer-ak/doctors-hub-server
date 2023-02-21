@@ -10,7 +10,7 @@ router.post("/signup", userController.signup);
 router.post("/login", userController.login);
 router.patch("/update-profile/:email", verifyToken, userController.updateProfile);
 router.post("/forget-password", userController.forgetPasswordEmail);
-router.get("/setting/:email", userController.userDetails);
+router.get("/setting/:email", verifyToken, userController.userDetails);
 router.post("/user/set-new-password/:ptoken", userController.setNewPassword);
 router.get("/signup/confirmation/:token", userController.confirmEmail);
 router.get(
