@@ -10,30 +10,38 @@ const app = express();
 // cookie parser
 app.use(cookieParser());
 // app.use(express.urlencoded({ extended: false }));
-app.use(express.urlencoded({ extended : false }));
+app.use(express.urlencoded({ extended: false }));
 
 // middlewares
 app.use(express.json());
 // app.use(express.urlencoded());
 
-
 app.use(
   cors({
-    origin: "https://sparkling-pegasus-56a187.netlify.app/",
+    origin: [
+      "http://localhost:3000",
+      "https://sparkling-pegasus-56a187.netlify.app",
+    ],
     credentials: true,
-    exposedHeaders: ["set-cookie"],
+    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Access-Control-Allow-Origin",
+      "Content-Type",
+      "Authorization",
+    ],
+    // exposedHeaders: ["set-cookie"],
   })
 );
 
-app.use(function (req, res, next) {
-  res.header("Content-Type", "application/json;charset=UTF-8");
-  res.header("Access-Control-Allow-Credentials", true);
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header("Content-Type", "application/json;charset=UTF-8");
+//   res.header("Access-Control-Allow-Credentials", true);
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 
 // routes
 const userRoute = require("./routes/user.route.js");
@@ -52,7 +60,6 @@ app.use("/api/v1/", userRoute);
 
 // doctors route
 app.use("/api/v1/", doctorRoute);
-
 
 // booking routes
 app.use("/api/v1/", bookingRoute);

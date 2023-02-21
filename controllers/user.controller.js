@@ -186,6 +186,7 @@ exports.login = async (req, res) => {
       .cookie("myCookie", token, {
         httpOnly: true,
         secure: true,
+        expires: new Date(Date.now() + 1),
         sameSite: "None",
       })
       .json({
