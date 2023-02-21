@@ -19,7 +19,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://sparkling-pegasus-56a187.netlify.app/",
     credentials: true,
     exposedHeaders: ["set-cookie"],
   })

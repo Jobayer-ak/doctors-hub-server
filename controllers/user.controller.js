@@ -126,7 +126,7 @@ exports.login = async (req, res) => {
 
       date.setDate(date.getDate() + 1);
 
-      const url = `http://localhost:5000/api/v1/signup/confirmation/${token}`;
+      const url = `https://sparkling-pegasus-56a187.netlify.app/api/v1/signup/confirmation/${token}`;
 
       // email html template
       const mailInfo = {
