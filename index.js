@@ -27,7 +27,7 @@ app.use(
     allowedHeaders: [
       "Access-Control-Allow-Origin",
       "Content-Type",
-      "application/json;charset=UTF-8",
+      // "application/json;charset=UTF-8",
     ],
   })
 );
