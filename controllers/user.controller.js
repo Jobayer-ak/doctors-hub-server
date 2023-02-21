@@ -142,7 +142,7 @@ exports.login = async (req, res) => {
       };
 
       // send email to user
-      sendMail(mailInfo);
+      await sendMail(mailInfo);
 
       const filter = { email: user.email };
       const update = {
