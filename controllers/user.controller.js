@@ -43,7 +43,7 @@ exports.signup = async (req, res) => {
       <div style="padding:10px; text-align: center;">
       <h2>Hello ${name}</h2>
       <p>Thank you for creating your account on Doctor's Hub. Please confirm your account.</p>
-      <a href="${url}/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
+      <a href="${url}/signup/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
       </div>
     `,
     };
@@ -126,7 +126,7 @@ exports.login = async (req, res) => {
 
       date.setDate(date.getDate() + 1);
 
-      const url = `https://sparkling-pegasus-56a187.netlify.app/api/v1/signup/confirmation/${token}`;
+      const url = req.protocol + "://" + req.get("host") + req.originalUrl;
 
       // email html template
       const mailInfo = {
@@ -136,7 +136,7 @@ exports.login = async (req, res) => {
         <div style="padding:10px; text-align: center;">
         <h2>Hello ${user.name}</h2>
         <p>Thank you for creating your account. Please confirm your account.</p>
-        <a href="${url}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
+        <a href="${url}/signup/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
         </div>
       `,
       };
@@ -182,11 +182,14 @@ exports.login = async (req, res) => {
 
     const { password: pwd, ...others } = user.toObject();
 
+    const date = new Date();
+
+    date.setDate(date.getDate() + 1);
+
     res
       .cookie("myCookie", token, {
         httpOnly: true,
         secure: true,
-        expires: new Date(Date.now() + 1),
         sameSite: "None",
       })
       .json({
