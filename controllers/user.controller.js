@@ -49,7 +49,7 @@ exports.signup = async (req, res) => {
     };
 
     // send email to user
-    sendMail(mailInfo);
+    await sendMail(mailInfo);
 
     res.status(200).json({
       status: "Success",
