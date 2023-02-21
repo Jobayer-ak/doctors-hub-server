@@ -33,7 +33,7 @@ exports.signup = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const url = req.protocol + "://" + req.get("host") + req.originalUrl;
+    const url = "https://sparkling-pegasus-56a187.netlify.app";
 
     // email html template
     const mailInfo = {
@@ -42,8 +42,8 @@ exports.signup = async (req, res) => {
       html: `
       <div style="padding:10px; text-align: center;">
       <h2>Hello ${name}</h2>
-      <p>Thank you for creating your account on Doctor's Hub. Please confirm your account.</p>
-      <a href="${url}/signup/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
+      <p>Thank you for creating your account on Doctor's Hub. Please confirm your Doctor's Hub account.</p>
+      <a href="${url}/confirmation/${token}" style="text-decoration:none;"> <button type="submit" style="color:white;text-align:center; background:blue; cursor:pointer; padding:5px 4px">Please Confirm Your Email</button></a>
       </div>
     `,
     };
@@ -126,12 +126,12 @@ exports.login = async (req, res) => {
 
       date.setDate(date.getDate() + 1);
 
-      const url = req.protocol + "://" + req.get("host") + req.originalUrl;
+      const url = "https://sparkling-pegasus-56a187.netlify.app";
 
       // email html template
       const mailInfo = {
         email: email,
-        subject: "Verify Your Account",
+        subject: "Verify Your Doctor's Hub Account",
         html: `
         <div style="padding:10px; text-align: center;">
         <h2>Hello ${user.name}</h2>
@@ -264,7 +264,7 @@ exports.forgetPasswordEmail = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const url = "http://localhost:3000/user/set-new-password";
+    const url = "https://sparkling-pegasus-56a187.netlify.app/user/set-new-password";
 
     // email html template
     const mailInfo = {
