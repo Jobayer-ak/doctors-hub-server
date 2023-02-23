@@ -5,6 +5,7 @@ const verifyToken = (req, res, next) => {
   const token = req.cookies.myCookie;
 
   if (!token) {
+    console.log("401 Authentication invalid")
     return res.status(401).json({ message: "Authentication invalid" });
   }
 
