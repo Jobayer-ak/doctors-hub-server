@@ -86,6 +86,10 @@ const doctorSchema = mongoose.Schema(
       type: Array,
       required: true,
     },
+    fee: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

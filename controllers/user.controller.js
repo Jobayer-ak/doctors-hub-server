@@ -209,6 +209,9 @@ exports.login = async (req, res) => {
 // logout
 exports.logout = async (req, res) => {
   try {
+
+    console.log("cookie :", res.cookie);
+
     await res.clearCookie("myCookie");
     // console.log("cook ",result)
     res.send({ message: "cookie is cleared!" });
