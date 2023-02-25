@@ -33,7 +33,7 @@ exports.signup = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const url = "https://sparkling-pegasus-56a187.netlify.app";
+    const url = "http://localhost:3000";
 
     // email html template
     const mailInfo = {
@@ -209,9 +209,6 @@ exports.login = async (req, res) => {
 // logout
 exports.logout = async (req, res) => {
   try {
-
-    console.log("cookie :", res.cookie);
-
     await res.clearCookie("myCookie");
     // console.log("cook ",result)
     res.send({ message: "cookie is cleared!" });
@@ -267,7 +264,8 @@ exports.forgetPasswordEmail = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const url = "https://sparkling-pegasus-56a187.netlify.app/user/set-new-password";
+    const url =
+      "https://sparkling-pegasus-56a187.netlify.app/user/set-new-password";
 
     // email html template
     const mailInfo = {
@@ -419,4 +417,26 @@ exports.userDetails = async (req, res) => {
   }
 };
 
-// useMutation of react query with axios 
+
+// delete user
+exports.deleteUser = async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const deleteDoctor = await User.deleteOne({ email: email });
+
+    if (deleteDoctor.deletedCount !== 1) {
+      return res.status(403).json({
+        success: false,
+        message: "Something Went Wrong!",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Deleted",
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}

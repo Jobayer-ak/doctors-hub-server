@@ -5,7 +5,7 @@ const verifyToken = require("../middlewares/verifyToken");
 const adminAuthorization = require("../middlewares/adminAuthorization");
 
 router.get("/admin/users", adminAuthorization, userController.getAllUsers);
-router.post("/logout", verifyToken, userController.logout);
+router.get("/logout", userController.logout);
 router.post("/signup", userController.signup);
 router.post("/login", userController.login);
 router.patch(
@@ -22,6 +22,11 @@ router.get(
   verifyToken,
   adminAuthorization,
   userController.getAdmin
+);
+router.delete(
+  "/user/admin/delete/:email",
+  adminAuthorization,
+  userController.deleteUser
 );
 
 module.exports = router;

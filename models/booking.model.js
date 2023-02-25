@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const ObjectId = mongoose.Types.ObjectId;
 
-const bookingSchema = mongoose.Schema( 
+const bookingSchema = mongoose.Schema(
   {
     doctor_name: {
       type: String,
@@ -10,7 +10,7 @@ const bookingSchema = mongoose.Schema(
     },
     doctor_id: [
       {
-        type: ObjectId, 
+        type: ObjectId,
         ref: "Doctor",
       },
     ],
@@ -53,7 +53,7 @@ const bookingSchema = mongoose.Schema(
     branch: {
       type: String,
       required: [true, "Branch name is required!"],
-    }
+    },
   },
   { timestamps: true }
 );
@@ -61,6 +61,5 @@ const bookingSchema = mongoose.Schema(
 const Booking = mongoose.model("Booking", bookingSchema);
 
 module.exports = Booking;
-
 
 // get only date-month-year

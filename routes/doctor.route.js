@@ -13,7 +13,10 @@ router.post(
   adminAuthorization,
   doctorController.addDoctor
 );
-router.delete("/doctor/admin/delete/:email", adminAuthorization, doctorController.deleteSingleDoctor);
-
+router.delete(
+  "/doctor/admin/delete/:email",
+  adminAuthorization,
+  doctorController.deleteSingleDoctor
+);
 
 module.exports = router;

@@ -5,6 +5,8 @@ exports.addDoctor = async (req, res) => {
   try {
     const email = req.body.email;
 
+    // console.log("Doctor info: ", req.body);
+
     const exist = await Doctor.find({ email });
 
     if (exist.length !== 0) {
@@ -29,6 +31,8 @@ exports.addDoctor = async (req, res) => {
 exports.getAllDoctor = async (req, res) => {
   try {
     const doctors = await Doctor.find({});
+
+    console.log("doctors: ", doctors);
 
     res.status(200).send(doctors);
   } catch (error) {
@@ -119,7 +123,7 @@ exports.getTimeSlots = async (req, res) => {
           department: 1,
           speciality: 1,
           branch: 1,
-          fee:1,
+          fee: 1,
           slot: {
             $setDifference: ["$time_slots", "$booked"],
           },
