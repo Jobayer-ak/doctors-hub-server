@@ -119,6 +119,13 @@ exports.login = async (req, res) => {
     // load user with email
     const user = await findByEmailService(email);
 
+    if (!user) {
+      return res.status(404).json({
+        status: "Failed",
+        error: "No user found! please create an account!",
+      });
+    }
+
     if (user.status === "inactive") {
       const token = crypto.randomBytes(32).toString("hex");
 
@@ -159,14 +166,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // console.log("user: ", user);
-
-    if (!user) {
-      return res.status(404).json({
-        status: "Failed",
-        error: "No user found! please create an account!",
-      });
-    }
+    console.log("user: ", user);
 
     // verify password
     const isPasswordValid = user.comparePassword(password, user.password);
@@ -417,7 +417,6 @@ exports.userDetails = async (req, res) => {
   }
 };
 
-
 // delete user
 exports.deleteUser = async (req, res) => {
   try {
@@ -439,4 +438,4 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-}
+};

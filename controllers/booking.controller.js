@@ -160,9 +160,9 @@ exports.pendingAppointments = async (req, res) => {
 // delete booking
 exports.singleBookDelete = async (req, res) => {
   try {
-    const id = req.params.id;
+    const email = req.params.email;
 
-    const deleteBooking = await Booking.deleteOne({ _id: id });
+    const deleteBooking = await Booking.deleteOne({ email: email });
 
     if (deleteBooking.deletedCount !== 1) {
       return res.status(403).json({

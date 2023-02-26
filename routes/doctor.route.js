@@ -6,7 +6,7 @@ const adminAuthorization = require("../middlewares/adminAuthorization");
 const { verify } = require("jsonwebtoken");
 
 router.get("/doctors", adminAuthorization, doctorController.getAllDoctor);
-router.get("/doctors/slots", verifyToken, doctorController.getTimeSlots);
+router.get("/doctors/slots", doctorController.getTimeSlots);
 router.post(
   "/admin/addDoctor",
   verifyToken,

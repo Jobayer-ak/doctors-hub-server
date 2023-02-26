@@ -54,6 +54,10 @@ const bookingSchema = mongoose.Schema(
       type: String,
       required: [true, "Branch name is required!"],
     },
+    fee: {
+      type: String,
+      required: [true, "Fee is required"],
+    },
   },
   { timestamps: true }
 );
