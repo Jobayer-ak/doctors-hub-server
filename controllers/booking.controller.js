@@ -1,7 +1,7 @@
-const Booking = require("../models/booking.model");
-const { createBookingService } = require("../services/booking.service");
-const { sendMail } = require("../utils/email");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const Booking = require('../models/booking.model');
+const { createBookingService } = require('../services/booking.service');
+const { sendMail } = require('../utils/email');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // get all apointments
 exports.allAppointments = async (req, res) => {
@@ -23,12 +23,12 @@ exports.singleAppointment = async (req, res) => {
     // console.log(result);
 
     res.status(200).json({
-      status: "Success",
+      status: 'Success',
       appointment: result,
     });
   } catch (error) {
     res.status(500).json({
-      status: "Failed",
+      status: 'Failed',
       error,
     });
   }
@@ -49,10 +49,10 @@ exports.bookingAppointment = async (req, res) => {
       branch,
     } = req.body;
 
-    if (req.user.role === "admin") {
+    if (req.user.role === 'admin') {
       return res.status(403).json({
-        status: "Failed",
-        message: "You are not permitted to book appointment.",
+        status: 'Failed',
+        message: 'You are not permitted to book appointment.',
       });
     }
 
@@ -74,7 +74,7 @@ exports.bookingAppointment = async (req, res) => {
       ) {
         return res.send({
           success: false,
-          message: "You already have an Appointment",
+          message: 'You already have an Appointment',
         });
       }
     } else {
@@ -83,7 +83,7 @@ exports.bookingAppointment = async (req, res) => {
       // email html template
       const mailInfo = {
         email: patient_email,
-        subject: "Appointment Confirmation Email",
+        subject: 'Appointment Confirmation Email',
         html: `
         <div>
         <h2>Hello ${patient_name}</h2>
@@ -102,7 +102,7 @@ exports.bookingAppointment = async (req, res) => {
 
       return res.send({
         success: true,
-        message: "Successfully Booked Your Appointment",
+        message: 'Successfully Booked Your Appointment',
         bookingResponse: booked,
       });
     }
@@ -127,7 +127,7 @@ exports.getBookingDetails = async (req, res) => {
 
       res.status(200).send(bookings);
     } else {
-      return res.status(403).send({ message: "Forbidden Access" });
+      return res.status(403).send({ message: 'Forbidden Access' });
     }
   } catch (error) {
     res.send(error);
@@ -150,7 +150,7 @@ exports.pendingAppointments = async (req, res) => {
 
       res.status(200).send(pending);
     } else {
-      return res.status(403).send({ message: "Forbidden Access" });
+      return res.status(403).send({ message: 'Forbidden Access' });
     }
   } catch (error) {
     res.status(500).send(error);
@@ -162,14 +162,14 @@ exports.singleBookDelete = async (req, res) => {
   try {
     const email = req.params.email;
 
-    console.log("Email: ", email);
+    console.log('Email: ', email);
 
     const deleteBooking = await Booking.deleteOne({ email: email });
 
     if (deleteBooking.deletedCount !== 1) {
       return res.status(403).json({
         success: false,
-        message: "Something Went Wrong!",
+        message: 'Something Went Wrong!',
       });
     }
 
@@ -177,7 +177,7 @@ exports.singleBookDelete = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Deleted",
+      message: 'Deleted',
     });
   } catch (error) {
     res.status(500).send(error);
@@ -187,19 +187,20 @@ exports.singleBookDelete = async (req, res) => {
 // payment intent
 exports.paymentIntent = async (req, res) => {
   try {
-    const bookFee = req.body;
-    const fee = bookFee.fee;
+    const {fee} = req.body;
+    // console.log("book fee: ", req.body)
+    
     const amount = fee * 100;
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
-      currency: "usd",
-      payment_method_types: ["card"],
+      currency: 'usd',
+      payment_method_types: ['card'],
     });
 
-    console.log(paymentIntent)
+    // console.log('Payment: ', paymentIntent);
 
     res.status(200).json({
-      status: "Success",
+      status: 'Success',
       clientSecret: paymentIntent.client_secret,
     });
   } catch (error) {}
