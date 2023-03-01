@@ -162,6 +162,8 @@ exports.singleBookDelete = async (req, res) => {
   try {
     const email = req.params.email;
 
+    console.log("Email: ", email);
+
     const deleteBooking = await Booking.deleteOne({ email: email });
 
     if (deleteBooking.deletedCount !== 1) {
@@ -193,6 +195,8 @@ exports.paymentIntent = async (req, res) => {
       currency: "usd",
       payment_method_types: ["card"],
     });
+
+    console.log(paymentIntent)
 
     res.status(200).json({
       status: "Success",

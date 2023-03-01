@@ -72,7 +72,6 @@ exports.getTimeSlots = async (req, res) => {
     const date = req.query.date;
 
     const gotDate = new Date(date);
-
     const bookingSlots = await Doctor.aggregate([
       {
         $lookup: {
