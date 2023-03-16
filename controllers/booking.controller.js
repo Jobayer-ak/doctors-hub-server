@@ -1,4 +1,5 @@
 const Booking = require('../models/booking.model');
+const Payment = require('../models/payment.model');
 const { createBookingService } = require('../services/booking.service');
 const { sendMail } = require('../utils/email');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -25,6 +26,37 @@ exports.singleAppointment = async (req, res) => {
     res.status(200).json({
       status: 'Success',
       appointment: result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'Failed',
+      error,
+    });
+  }
+};
+
+// update specific booked appointment
+exports.updateSingleAppointment = async (req, res) => {
+  try {
+    const id = req.params.id;
+    // console.log('Body: ', req.body);
+    // console.log('from update', id);
+
+    const bookedAppointment = await Booking.updateOne(
+      { _id: id },
+      { paid: true }
+    );
+
+    const bodyData = {
+      appointmentId: req.body.payment.appointment,
+      transactionId: req.body.payment.transactionId,
+    };
+
+    const tran = await Payment.create(bodyData);
+
+    res.status(200).json({
+      status: 'success',
+      error,
     });
   } catch (error) {
     res.status(500).json({
@@ -187,9 +219,9 @@ exports.singleBookDelete = async (req, res) => {
 // payment intent
 exports.paymentIntent = async (req, res) => {
   try {
-    const {fee} = req.body;
+    const { fee } = req.body;
     // console.log("book fee: ", req.body)
-    
+
     const amount = fee * 100;
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
