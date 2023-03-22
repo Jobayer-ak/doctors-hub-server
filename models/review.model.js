@@ -23,6 +23,11 @@ const reviewSchema = mongoose.Schema(
       required: [true, 'Select Gender'],
       trim: true,
     },
+    imageURL: {
+      type: String,
+      required: [true, 'Image URL is required!'],
+      trim: true,
+    },
     review: {
       type: String,
       required: [true, 'Please write a comment'],
