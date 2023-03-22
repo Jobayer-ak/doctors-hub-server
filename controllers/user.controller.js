@@ -474,3 +474,20 @@ exports.addReview = async (req, res) => {
     });
   }
 };
+
+// get reviews
+exports.getReviews = async (req, res) => {
+  try {
+    const result = await Review.find({});
+
+    res.status(200).json({
+      status: 'Success',
+      result,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'Failed',
+      error,
+    });
+  }
+};

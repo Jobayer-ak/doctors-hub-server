@@ -10,6 +10,7 @@ router.post('/signup', userController.signup);
 router.post('/login', userController.login);
 router.post('/forget-password', userController.forgetPasswordEmail);
 router.post('/add-review', verifyToken, userController.addReview);
+router.get('/get-reviews', userController.getReviews);
 router.post('/user/set-new-password/:ptoken', userController.setNewPassword);
 router.get('/signup/confirmation/:token', userController.confirmEmail);
 router.get('/setting/:email', verifyToken, userController.userDetails);
