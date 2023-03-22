@@ -11,6 +11,7 @@ const { generateToken } = require('../utils/token');
 const User = require('../models/user.model');
 const Doctor = require('../models/doctor.model');
 const { sendMail } = require('../utils/email');
+const Review = require('../models/review.model');
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -443,15 +444,35 @@ exports.deleteUser = async (req, res) => {
 // add a review
 exports.addReview = async (req, res) => {
   try {
-    console.log('body of review: ', req.body);
-    console.log('first');
+    const reviewData = req.body;
+
+    if (!req.body) {
+      return res.status(403).json({
+        status: 'Failed',
+        message: 'You must write review and select rating star!',
+      });
+    }
+
+    const exist = await Review.findOne({ email: reviewData.email });
+
+    if (exist) {
+      return res.status(409).json({
+        status: 'Failed',
+        message: 'You have already given us review!',
+      });
+    }
+
+    const result = await Review.create(reviewData);
+
+    console.log('result: ', result);
     res.status(200).json({
       status: 'Success',
+      message: 'Thanks! For giving us review!',
     });
   } catch (error) {
     res.status(500).json({
       status: 'Failed',
-      error: err,
+      error,
     });
   }
 };

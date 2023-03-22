@@ -9,9 +9,10 @@ router.get('/logout', userController.logout);
 router.post('/signup', userController.signup);
 router.post('/login', userController.login);
 router.post('/forget-password', userController.forgetPasswordEmail);
-router.get('/setting/:email', verifyToken, userController.userDetails);
+router.post('/add-review', verifyToken, userController.addReview);
 router.post('/user/set-new-password/:ptoken', userController.setNewPassword);
 router.get('/signup/confirmation/:token', userController.confirmEmail);
+router.get('/setting/:email', verifyToken, userController.userDetails);
 router.get(
   '/admin/:email',
   verifyToken,
@@ -28,6 +29,5 @@ router.patch(
   verifyToken,
   userController.updateProfile
 );
-router.patch('/add-review', verifyToken, userController.addReview);
 
 module.exports = router;

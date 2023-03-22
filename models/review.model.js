@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const reviewSchema = mongoose.Schema(
   {
@@ -21,11 +22,6 @@ const reviewSchema = mongoose.Schema(
       type: String,
       required: [true, 'Select Gender'],
       trim: true,
-    },
-    status: {
-      type: String,
-      default: 'inactive',
-      enum: ['active', 'inactive', 'blocked'],
     },
     review: {
       type: String,
