@@ -444,14 +444,13 @@ exports.deleteUser = async (req, res) => {
 // add a review
 exports.addReview = async (req, res) => {
   try {
-    const reviewData = req.body;
-
     if (!req.body) {
       return res.status(403).json({
         status: 'Failed',
         message: 'You must write review and select rating star!',
       });
     }
+    const reviewData = req.body;
 
     const exist = await Review.findOne({ email: reviewData.email });
 
@@ -464,7 +463,6 @@ exports.addReview = async (req, res) => {
 
     const result = await Review.create(reviewData);
 
-    console.log('result: ', result);
     res.status(200).json({
       status: 'Success',
       message: 'Thanks! For giving us review!',
