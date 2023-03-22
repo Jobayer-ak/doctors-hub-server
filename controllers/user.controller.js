@@ -1,16 +1,16 @@
 // const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const {
   signUpService,
   findByEmailService,
-} = require("../services/user.service");
-const { generateToken } = require("../utils/token");
-const User = require("../models/user.model");
-const Doctor = require("../models/doctor.model");
-const { sendMail } = require("../utils/email");
+} = require('../services/user.service');
+const { generateToken } = require('../utils/token');
+const User = require('../models/user.model');
+const Doctor = require('../models/doctor.model');
+const { sendMail } = require('../utils/email');
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -33,7 +33,7 @@ exports.signup = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const url = "http://localhost:3000";
+    const url = 'http://localhost:3000';
 
     // email html template
     const mailInfo = {
@@ -52,12 +52,12 @@ exports.signup = async (req, res) => {
     await sendMail(mailInfo);
 
     res.status(200).json({
-      status: "Success",
-      message: "Successfully Signed Up!",
+      status: 'Success',
+      message: 'Successfully Signed Up!',
     });
   } catch (error) {
     res.status(500).json({
-      status: "Failed",
+      status: 'Failed',
       message: error.message,
     });
   }
@@ -72,8 +72,8 @@ exports.confirmEmail = async (req, res) => {
 
     if (!user) {
       return res.status(403).json({
-        status: "Fail",
-        error: "Invalid Token",
+        status: 'Fail',
+        error: 'Invalid Token',
       });
     }
 
@@ -81,23 +81,23 @@ exports.confirmEmail = async (req, res) => {
 
     if (expired) {
       return res.status(401).json({
-        status: "Failed",
-        error: "User Confirmation Token Expired",
+        status: 'Failed',
+        error: 'User Confirmation Token Expired',
       });
     }
-    user.status = "active";
+    user.status = 'active';
     user.confirmationToken = undefined;
     user.confirmationTokenExpires = undefined;
 
     user.save({ validateBeforeSave: false });
 
     res.status(200).json({
-      status: "Success",
-      message: "Successfully activated your account",
+      status: 'Success',
+      message: 'Successfully activated your account',
     });
   } catch (error) {
     res.status(500).json({
-      status: "Failed",
+      status: 'Failed',
       error,
     });
   }
@@ -111,8 +111,8 @@ exports.login = async (req, res) => {
     // check email and password are provided
     if (!email || !password) {
       return res.status(401).json({
-        status: "Failed",
-        error: "Please provide your username and password!",
+        status: 'Failed',
+        error: 'Please provide your username and password!',
       });
     }
 
@@ -121,19 +121,19 @@ exports.login = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        status: "Failed",
-        error: "No user found! please create an account!",
+        status: 'Failed',
+        error: 'No user found! please create an account!',
       });
     }
 
-    if (user.status === "inactive") {
-      const token = crypto.randomBytes(32).toString("hex");
+    if (user.status === 'inactive') {
+      const token = crypto.randomBytes(32).toString('hex');
 
       const date = new Date();
 
       date.setDate(date.getDate() + 1);
 
-      const url = "https://sparkling-pegasus-56a187.netlify.app";
+      const url = 'https://sparkling-pegasus-56a187.netlify.app';
 
       // email html template
       const mailInfo = {
@@ -160,21 +160,21 @@ exports.login = async (req, res) => {
       await User.findOneAndUpdate(filter, update);
 
       return res.status(401).json({
-        status: "Failed",
+        status: 'Failed',
         message:
-          "Again send confirmation email to verify your accout. Please check your email.",
+          'Again send confirmation email to verify your accout. Please check your email.',
       });
     }
 
-    console.log("user: ", user);
+    console.log('user: ', user);
 
     // verify password
     const isPasswordValid = user.comparePassword(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(403).json({
-        status: "Failed",
-        error: "Email or Password is not correct!",
+        status: 'Failed',
+        error: 'Email or Password is not correct!',
       });
     }
 
@@ -187,20 +187,20 @@ exports.login = async (req, res) => {
     date.setDate(date.getDate() + 1);
 
     res
-      .cookie("myCookie", token, {
+      .cookie('myCookie', token, {
         httpOnly: true,
         secure: true,
-        sameSite: "None",
+        sameSite: 'None',
       })
       .json({
         success: true,
-        message: "successfully loggedin",
+        message: 'successfully loggedin',
         token,
         others,
       });
   } catch (error) {
     res.status(500).json({
-      status: "Failed",
+      status: 'Failed',
       message: error.message,
     });
   }
@@ -209,9 +209,9 @@ exports.login = async (req, res) => {
 // logout
 exports.logout = async (req, res) => {
   try {
-    await res.clearCookie("myCookie");
+    await res.clearCookie('myCookie');
     // console.log("cook ",result)
-    res.send({ message: "cookie is cleared!" });
+    res.send({ message: 'cookie is cleared!' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -241,19 +241,19 @@ exports.forgetPasswordEmail = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        success: "Failed",
+        success: 'Failed',
         message: `There is no user!`,
       });
     }
 
     if (user.confirmationToken) {
       return res.status(403).json({
-        success: "Failed",
+        success: 'Failed',
         message: "You didn't activate your account yet.",
       });
     }
 
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = crypto.randomBytes(32).toString('hex');
 
     const date = new Date();
 
@@ -265,12 +265,12 @@ exports.forgetPasswordEmail = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     const url =
-      "https://sparkling-pegasus-56a187.netlify.app/user/set-new-password";
+      'https://sparkling-pegasus-56a187.netlify.app/user/set-new-password';
 
     // email html template
     const mailInfo = {
       email: user.email,
-      subject: "Reset Password",
+      subject: 'Reset Password',
       html: `
       <div style="padding:10px; text-align: center;">
       <h2>Hello ${user.name}</h2>
@@ -284,8 +284,8 @@ exports.forgetPasswordEmail = async (req, res) => {
     sendMail(mailInfo);
 
     res.status(200).json({
-      status: "Success",
-      message: "Reset password email has been sent.",
+      status: 'Success',
+      message: 'Reset password email has been sent.',
     });
   } catch (error) {
     res.status(500).json({
@@ -302,8 +302,8 @@ exports.setNewPassword = async (req, res) => {
 
     if (!pass || !ptoken) {
       return res.status(403).json({
-        status: "Fail",
-        error: "New password is required!",
+        status: 'Fail',
+        error: 'New password is required!',
       });
     }
 
@@ -311,8 +311,8 @@ exports.setNewPassword = async (req, res) => {
 
     if (!user) {
       return res.status(403).json({
-        status: "Fail",
-        error: "You already set new password!",
+        status: 'Fail',
+        error: 'You already set new password!',
       });
     }
 
@@ -320,8 +320,8 @@ exports.setNewPassword = async (req, res) => {
 
     if (expired) {
       return res.status(401).json({
-        status: "Failed",
-        error: "User Confirmation Token is Expired",
+        status: 'Failed',
+        error: 'User Confirmation Token is Expired',
       });
     }
 
@@ -338,8 +338,8 @@ exports.setNewPassword = async (req, res) => {
     user.save({ validateBeforeSave: false });
 
     res.status(200).json({
-      status: "Success",
-      message: "Your new password has been set.",
+      status: 'Success',
+      message: 'Your new password has been set.',
     });
   } catch (error) {
     res.status(500).json({
@@ -356,8 +356,8 @@ exports.updateProfile = async (req, res) => {
 
     if (!email || !userData) {
       return res.status(403).json({
-        status: "Failed",
-        message: "Please fill up all required fields!",
+        status: 'Failed',
+        message: 'Please fill up all required fields!',
       });
     }
 
@@ -367,19 +367,19 @@ exports.updateProfile = async (req, res) => {
 
     if (!updateUser.modifiedCount) {
       return res.status(304).json({
-        status: "Failed",
-        message: "Your profile information is not updated",
+        status: 'Failed',
+        message: 'Your profile information is not updated',
       });
     }
 
     res.status(200).json({
-      status: "Success",
-      message: "Successfully Updated Your Profile!",
+      status: 'Success',
+      message: 'Successfully Updated Your Profile!',
     });
   } catch (error) {
     res.status(500).json({
-      status: "Failed",
-      message: "Something went wrong",
+      status: 'Failed',
+      message: 'Something went wrong',
       error,
     });
   }
@@ -390,7 +390,7 @@ exports.userDetails = async (req, res) => {
   try {
     const { email } = req.params;
     if (!email) {
-      return res.status(401).json({ message: "Please provide email" });
+      return res.status(401).json({ message: 'Please provide email' });
     }
     const user = await User.findOne({ email: email }).select({
       password: 0,
@@ -400,18 +400,18 @@ exports.userDetails = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        status: "Failed",
-        error: "There is no user!",
+        status: 'Failed',
+        error: 'There is no user!',
       });
     }
 
     res.status(200).json({
-      status: "Success",
+      status: 'Success',
       user,
     });
   } catch (err) {
     res.status(500).json({
-      status: "Failed",
+      status: 'Failed',
       error: err,
     });
   }
@@ -427,15 +427,31 @@ exports.deleteUser = async (req, res) => {
     if (deleteDoctor.deletedCount !== 1) {
       return res.status(403).json({
         success: false,
-        message: "Something Went Wrong!",
+        message: 'Something Went Wrong!',
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Deleted",
+      message: 'Deleted',
     });
   } catch (error) {
     res.status(500).send(error);
+  }
+};
+
+// add a review
+exports.addReview = async (req, res) => {
+  try {
+    console.log('body of review: ', req.body);
+    console.log('first');
+    res.status(200).json({
+      status: 'Success',
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'Failed',
+      error: err,
+    });
   }
 };

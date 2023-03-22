@@ -42,6 +42,13 @@ exports.updateSingleAppointment = async (req, res) => {
     // console.log('Body: ', req.body);
     // console.log('from update', id);
 
+    if (!req.body) {
+      return res.status(400).json({
+        status: 'Failed',
+        message: 'Something went wrong! Try again!',
+      });
+    }
+
     const bookedAppointment = await Booking.updateOne(
       { _id: id },
       { paid: true }
@@ -52,11 +59,19 @@ exports.updateSingleAppointment = async (req, res) => {
       transactionId: req.body.payment.transactionId,
     };
 
+    console.log('updated: ', bookedAppointment);
+
+    if (!bookedAppointment.modifiedCount) {
+      return res.status(403).json({
+        status: 'Failed',
+        message: 'Something went wrong with payment! Try again!',
+      });
+    }
     const tran = await Payment.create(bodyData);
 
     res.status(200).json({
       status: 'success',
-      error,
+      message: 'Successfully payment has been completed!',
     });
   } catch (error) {
     res.status(500).json({
