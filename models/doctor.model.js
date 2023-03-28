@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
+const mongoose = require('mongoose');
+const validator = require('validator');
 const ObjectId = mongoose.Types.ObjectId;
 
 const doctorSchema = mongoose.Schema(
@@ -7,30 +7,30 @@ const doctorSchema = mongoose.Schema(
     name: {
       type: String,
       required: true,
-      minLength: [3, "Name should be at least 3 characters"],
-      maxLength: [40, "Name is too large"],
+      minLength: [3, 'Name should be at least 3 characters'],
+      maxLength: [40, 'Name is too large'],
     },
     email: {
       type: String,
-      validate: [validator.isEmail, "Provide a valid Email!"],
+      validate: [validator.isEmail, 'Provide a valid Email!'],
       trim: true,
       unique: true,
       lowercase: true,
-      required: [true, "Email address is required"],
+      required: [true, 'Email address is required'],
     },
     contact_number: {
       type: String,
       validate: [
         validator.isMobilePhone,
-        "Please provide a valid contact number!",
+        'Please provide a valid contact number!',
       ],
       required: true,
     },
     address: {
       type: String,
       required: true,
-      minLength: [3, "Name should be at least 3 characters"],
-      maxLength: [60, "Name is too large"],
+      minLength: [3, 'Name should be at least 3 characters'],
+      maxLength: [60, 'Name is too large'],
     },
     nid: {
       type: String,
@@ -80,10 +80,15 @@ const doctorSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    imageURL: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
 
-const Doctor = mongoose.model("Doctor", doctorSchema);
+const Doctor = mongoose.model('Doctor', doctorSchema);
 
 module.exports = Doctor;

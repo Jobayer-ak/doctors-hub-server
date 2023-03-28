@@ -26,6 +26,11 @@ router.delete(
   userController.deleteUser
 );
 router.patch(
+  '/user/admin/make-admin/:email',
+  adminAuthorization,
+  userController.makeAdin
+);
+router.patch(
   '/update-profile/:email',
   verifyToken,
   userController.updateProfile

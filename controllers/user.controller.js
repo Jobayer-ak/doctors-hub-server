@@ -349,7 +349,7 @@ exports.setNewPassword = async (req, res) => {
   }
 };
 
-// user setting
+// setting/update user profile
 exports.updateProfile = async (req, res) => {
   try {
     const { email } = req.params;
@@ -418,6 +418,42 @@ exports.userDetails = async (req, res) => {
   }
 };
 
+// make admin 
+exports.makeAdin = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res.status(403).json({
+        status: 'Failed',
+        message: 'Did not get user email!',
+      });
+    }
+
+    const updateRole = await User.updateOne({ email: email }, {role: "admin"});
+
+    console.log(updateRole);
+
+    if (!updateRole.modifiedCount) {
+      return res.status(304).json({
+        status: 'Failed',
+        message: 'You could not make admin!',
+      });
+    }
+
+    res.status(200).json({
+      status: 'Success',
+      message: 'Successfully make an admin!',
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'Failed',
+      message: 'Something went wrong',
+      error,
+    });
+  }
+};
+
 // delete user
 exports.deleteUser = async (req, res) => {
   try {
@@ -472,14 +508,14 @@ exports.addReview = async (req, res) => {
       status: 'Failed',
       error,
     });
-  }
+  } 
 };
 
 // get reviews
 exports.getReviews = async (req, res) => {
   try {
     const result = await Review.find({});
-
+    // console.log('res: ', result);
     res.status(200).json({
       status: 'Success',
       result,
