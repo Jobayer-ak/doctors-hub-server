@@ -30,9 +30,38 @@ exports.addDoctor = async (req, res) => {
 // get all doctors
 exports.getAllDoctor = async (req, res) => {
   try {
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+    
+    const startIndex = (page - 1) * limit;
+    const lastIndex = page * limit;
+    
+    console.log(startIndex, lastIndex);
+    const skip = (page - 1)*limit;
     const doctors = await Doctor.find({});
 
-    // console.log("doctors: ", doctors);
+    const results = {};
+    const totalDoctors = doctors.length;
+
+
+
+    if (lastIndex < doctors.length) {
+      results.next = {
+        page: page + 1,
+      };
+    }
+
+    if (startIndex > 0) {
+      results.prev = {
+        page: page - 1,
+      };
+    }
+
+    results.result = doctors.slice(startIndex, lastIndex);
+
+
+
+    // console.log("doctors: ", result);
 
     res.status(200).send(doctors);
   } catch (error) {
@@ -42,7 +71,6 @@ exports.getAllDoctor = async (req, res) => {
     });
   }
 };
-
 
 // get doctors checkup slots
 exports.getTimeSlots = async (req, res) => {
@@ -101,6 +129,7 @@ exports.getTimeSlots = async (req, res) => {
           department: 1,
           speciality: 1,
           branch: 1,
+          time_slots: 1,
           fee: 1,
           imageURL: 1,
           slot: {
@@ -119,7 +148,6 @@ exports.getTimeSlots = async (req, res) => {
     });
   }
 };
-
 
 // delete single doctor
 exports.deleteSingleDoctor = async (req, res) => {
@@ -143,4 +171,3 @@ exports.deleteSingleDoctor = async (req, res) => {
     res.status(500).send(error);
   }
 };
-

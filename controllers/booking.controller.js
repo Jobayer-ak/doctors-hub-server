@@ -9,6 +9,8 @@ exports.allAppointments = async (req, res) => {
   try {
     const appointments = await Booking.find({});
 
+    console.log("dd: ", appointments);
+
     res.status(200).send(appointments);
   } catch (error) {
     res.status(500).send(error);
@@ -244,11 +246,19 @@ exports.paymentIntent = async (req, res) => {
       payment_method_types: ['card'],
     });
 
-    // console.log('Payment: ', paymentIntent);
+    console.log('Payment: ', paymentIntent);
 
     res.status(200).json({
       status: 'Success',
       clientSecret: paymentIntent.client_secret,
     });
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({
+      status: 'Failed',
+      erorr: error.message,
+    });
+  }
 };
+
+
+// how to create login mehtod in in useContext in react 

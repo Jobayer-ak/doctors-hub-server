@@ -4,7 +4,7 @@ const bookingController = require('../controllers/booking.controller');
 const verifyToken = require('../middlewares/verifyToken');
 const adminAuthorization = require('../middlewares/adminAuthorization');
 
-router.get('/all-appointments', bookingController.allAppointments);
+router.get('/all-appointments', adminAuthorization, bookingController.allAppointments);
 router.get('/bookings', verifyToken, bookingController.getBookingDetails);
 
 router.get(

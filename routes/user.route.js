@@ -26,9 +26,9 @@ router.delete(
   userController.deleteUser
 );
 router.patch(
-  '/user/admin/make-admin/:email',
+  '/admin/make-admin/:id',
   adminAuthorization,
-  userController.makeAdin
+  userController.makeAdmin
 );
 router.patch(
   '/update-profile/:email',
