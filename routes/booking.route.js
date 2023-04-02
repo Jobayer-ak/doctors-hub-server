@@ -15,7 +15,7 @@ router.get(
 router.post('/booking', verifyToken, bookingController.bookingAppointment);
 router.post(
   '/create-payment-intent',
-  verifyToken,
+  verifyToken, 
   bookingController.paymentIntent
 );
 router.get('/booking/:id', verifyToken, bookingController.singleAppointment);

@@ -31,39 +31,46 @@ exports.addDoctor = async (req, res) => {
 exports.getAllDoctor = async (req, res) => {
   try {
     const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
-    
-    const startIndex = (page - 1) * limit;
-    const lastIndex = page * limit;
-    
-    console.log(startIndex, lastIndex);
-    const skip = (page - 1)*limit;
-    const doctors = await Doctor.find({});
+    let limit = parseInt(req.query.limit);
 
-    const results = {};
-    const totalDoctors = doctors.length;
+    const totalDoctors = await Doctor.countDocuments({});
 
-
-
-    if (lastIndex < doctors.length) {
-      results.next = {
-        page: page + 1,
-      };
+    if (limit > totalAppointments) {
+      limit = totalAppointments;
     }
+    const skip = (page - 1) * limit;
 
-    if (startIndex > 0) {
-      results.prev = {
-        page: page - 1,
-      };
-    }
+    const queries = {};
+    queries.skip = skip;
+    queries.limit = limit;
 
-    results.result = doctors.slice(startIndex, lastIndex);
+    queries.pageCount = Math.ceil(totalDoctors / limit);
 
+    const doctors = await Doctor.find({})
+      .skip(queries.skip)
+      .limit(queries.limit);
 
+    const result = { doctors, queries };
+
+    // console.log(totalDoctors);
+
+    // if (lastIndex < doctors.length) {
+    //   queries.next = {
+    //     page: page + 1,
+    //   };
+    // }
+
+    // if (startIndex > 0) {
+    //   queries.prev = {
+    //     page: page - 1,
+    //   };
+    // }
+
+    // results.result = doctors.slice(startIndex, lastIndex);
 
     // console.log("doctors: ", result);
 
-    res.status(200).send(doctors);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).json({
       status: 'Failed',

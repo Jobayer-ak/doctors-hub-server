@@ -7,14 +7,38 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // get all apointments
 exports.allAppointments = async (req, res) => {
   try {
-    const appointments = await Booking.find({});
-
-    console.log("dd: ", appointments);
-
-    res.status(200).send(appointments);
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    const maxLimit = 100;
+  
+    // Set a maximum limit to prevent the client from requesting too many records
+    limit = Math.min(limit, maxLimit);
+  
+    const totalAppointments = await Booking.countDocuments({});
+  
+    const skip = Math.min((page - 1) * limit, totalAppointments);
+  
+    console.log('limit: ', limit);
+    console.log('skip: ', skip);
+  
+    const queries = { page, limit, skip };
+  
+    queries.pageCount = Math.ceil(totalAppointments / limit);
+  
+    const appointments = await Booking.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Sort by descending order of creation time
+  
+    const result = { appointments, queries };
+  
+    res.status(200).send(result);
   } catch (error) {
-    res.status(500).send(error);
+    console.error(error);
+    const errorMessage = 'An error occurred while fetching appointments.';
+    res.status(500).send({ message: errorMessage });
   }
+  
 };
 
 // specific booking appointment
@@ -260,5 +284,4 @@ exports.paymentIntent = async (req, res) => {
   }
 };
 
-
-// how to create login mehtod in in useContext in react 
+// how to create login mehtod in in useContext in react

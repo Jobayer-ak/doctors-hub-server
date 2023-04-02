@@ -15,9 +15,29 @@ const Review = require('../models/review.model');
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({});
+    const page = parseInt(req.query.page);
+    let limit = parseInt(req.query.limit);
+    
+    const totalUsers = await User.countDocuments({});
+
+    if (limit > totalAppointments) {
+      limit = totalAppointments;
+    }
+    const skip = (page - 1) * limit;
+
+    const queries = {};
+    queries.skip = skip;
+    queries.limit = limit;
+
+
+    queries.pageCount = Math.ceil(totalUsers / limit);
+
+    const users = await User.find({}).skip(queries.skip).limit(queries.limit);
+
+    const result = { users, queries };
+
     // console.log(users);
-    res.status(200).send(users);
+    res.status(200).send(result);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -439,7 +459,6 @@ exports.makeAdmin = async (req, res) => {
 
     const updateRole = await User.updateOne(filter, update);
 
-
     if (!updateRole.modifiedCount) {
       return res.status(304).json({
         status: 'Failed',
@@ -459,7 +478,6 @@ exports.makeAdmin = async (req, res) => {
     });
   }
 };
-
 
 // delete user
 exports.deleteUser = async (req, res) => {
