@@ -10,35 +10,35 @@ exports.allAppointments = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 10;
     const maxLimit = 100;
-  
+
     // Set a maximum limit to prevent the client from requesting too many records
     limit = Math.min(limit, maxLimit);
-  
+
     const totalAppointments = await Booking.countDocuments({});
-  
-    const skip = Math.min((page - 1) * limit, totalAppointments);
-  
-    console.log('limit: ', limit);
-    console.log('skip: ', skip);
-  
+
+    let skip = Math.min((page - 1) * limit, totalAppointments);
+
+    if (limit > totalAppointments) {
+      skip = 0;
+    }
+
     const queries = { page, limit, skip };
-  
+
     queries.pageCount = Math.ceil(totalAppointments / limit);
-  
+
     const appointments = await Booking.find({})
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 }); // Sort by descending order of creation time
-  
+
     const result = { appointments, queries };
-  
+
     res.status(200).send(result);
   } catch (error) {
     console.error(error);
     const errorMessage = 'An error occurred while fetching appointments.';
     res.status(500).send({ message: errorMessage });
   }
-  
 };
 
 // specific booking appointment
@@ -190,21 +190,56 @@ exports.bookingAppointment = async (req, res) => {
 exports.getBookingDetails = async (req, res) => {
   try {
     const email = req.query.patient;
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
 
-    if (email === req.user.email) {
-      const bookings = await Booking.find({
-        patient_email: req.user.email,
-      }).sort({ date: -1 });
+    const maxLimit = 100;
 
-      // console.log("All bookings: ", bookings);
+    // Set a maximum limit to prevent the client from requesting too many records
+    limit = Math.min(limit, maxLimit);
 
-      res.status(200).send(bookings);
-    } else {
-      return res.status(403).send({ message: 'Forbidden Access' });
+    const totalAppointments = await Booking.countDocuments({});
+
+    let skip = Math.min((page - 1) * limit, totalAppointments);
+
+    if (limit > totalAppointments) {
+      skip = 0;
     }
+
+    const queries = { page, limit, skip };
+
+    queries.pageCount = Math.ceil(totalAppointments / limit);
+
+    const appointments = await Booking.find({patient_email: req.user.email})
+      .skip(skip)
+      .limit(limit)
+      .sort({ date: -1 }); // Sort by descending order of creation time
+
+    const result = { appointments, queries };
+
+    res.status(200).send(result);
   } catch (error) {
-    res.send(error);
+    console.error(error);
+    const errorMessage = 'An error occurred while fetching appointments.';
+    res.status(500).send({ message: errorMessage });
   }
+
+  //   console.log("queries: ", email, page, limit);
+
+  //   if (email === req.user.email) {
+  //     const bookings = await Booking.find({
+  //       patient_email: req.user.email,
+  //     }).sort({ date: -1 });
+
+  //     // console.log("All bookings: ", bookings);
+
+  //     res.status(200).send(bookings);
+  //   } else {
+  //     return res.status(403).send({ message: 'Forbidden Access' });
+  //   }
+  // } catch (error) {
+  //   res.send(error);
+  // }
 };
 
 // getting pending bookings

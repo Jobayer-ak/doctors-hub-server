@@ -15,32 +15,64 @@ const Review = require('../models/review.model');
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const page = parseInt(req.query.page);
-    let limit = parseInt(req.query.limit);
-    
-    const totalUsers = await User.countDocuments({});
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 5;
+    const maxLimit = 100;
 
-    if (limit > totalAppointments) {
-      limit = totalAppointments;
+    // Set a maximum limit to prevent the client from requesting too many records
+    limit = Math.min(limit, maxLimit);
+
+    const allUsers = await User.countDocuments({});
+
+    let skip = Math.min((page - 1) * limit, allUsers);
+    if (limit > allUsers) {
+      skip = 0;
     }
-    const skip = (page - 1) * limit;
+    const queries = { page, limit, skip };
 
-    const queries = {};
-    queries.skip = skip;
-    queries.limit = limit;
+    queries.pageCount = Math.ceil(allUsers / limit);
 
+    const users = await User.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Sort by descending order of creation time
 
-    queries.pageCount = Math.ceil(totalUsers / limit);
+    const result = { users, queries, page };
 
-    const users = await User.find({}).skip(queries.skip).limit(queries.limit);
+    // console.log("users: ", users);
 
-    const result = { users, queries };
-
-    // console.log(users);
     res.status(200).send(result);
   } catch (error) {
-    res.status(500).send(error);
+    console.error(error);
+    const errorMessage = 'An error occurred while fetching all users.';
+    res.status(500).send({ message: errorMessage });
   }
+  // try {
+  //   const page = parseInt(req.query.page);
+  //   let limit = parseInt(req.query.limit);
+
+  //   const totalUsers = await User.countDocuments({});
+
+  //   if (limit > totalAppointments) {
+  //     limit = totalAppointments;
+  //   }
+  //   const skip = (page - 1) * limit;
+
+  //   const queries = {};
+  //   queries.skip = skip;
+  //   queries.limit = limit;
+
+  //   queries.pageCount = Math.ceil(totalUsers / limit);
+
+  //   const users = await User.find({}).skip(queries.skip).limit(queries.limit);
+
+  //   const result = { users, queries };
+
+  //   // console.log(users);
+  //   res.status(200).send(result);
+  // } catch (error) {
+  //   res.status(500).send(error);
+  // }
 };
 
 // signup
