@@ -112,11 +112,39 @@ exports.getAllDoctor = async (req, res) => {
   // }
 };
 
+// search doctors by any user
 exports.searchDoctors = async (req, res) => {
   try {
-    
+    const doctors = await Doctor.find({});
+
+    res.status(200).json({
+      success: true,
+      doctors,
+    });
   } catch (error) {
-    
+    res.status(500).json({
+      success: false,
+      error: "didn't get doctors",
+    });
+  }
+};
+
+//search specific doctor by any user
+exports.searchSingleDoctor = async (req, res) => {
+  try {
+    const docName = req.query.name;
+    const doctor = await Doctor.findOne({ name: docName });
+
+    res.status(200).json({
+      success: true,
+      doctor
+    })
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Didn't find the doctor!"
+    })
   }
 }
 
