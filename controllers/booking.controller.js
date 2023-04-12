@@ -210,7 +210,7 @@ exports.getBookingDetails = async (req, res) => {
 
     queries.pageCount = Math.ceil(totalAppointments / limit);
 
-    const appointments = await Booking.find({patient_email: req.user.email})
+    const appointments = await Booking.find({ patient_email: req.user.email })
       .skip(skip)
       .limit(limit)
       .sort({ date: -1 }); // Sort by descending order of creation time
@@ -223,23 +223,6 @@ exports.getBookingDetails = async (req, res) => {
     const errorMessage = 'An error occurred while fetching appointments.';
     res.status(500).send({ message: errorMessage });
   }
-
-  //   console.log("queries: ", email, page, limit);
-
-  //   if (email === req.user.email) {
-  //     const bookings = await Booking.find({
-  //       patient_email: req.user.email,
-  //     }).sort({ date: -1 });
-
-  //     // console.log("All bookings: ", bookings);
-
-  //     res.status(200).send(bookings);
-  //   } else {
-  //     return res.status(403).send({ message: 'Forbidden Access' });
-  //   }
-  // } catch (error) {
-  //   res.send(error);
-  // }
 };
 
 // getting pending bookings
@@ -247,33 +230,56 @@ exports.pendingAppointments = async (req, res) => {
   try {
     const email = req.query.patient;
     const date = req.query.date;
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
 
-    if (email === req.user.email) {
-      const pending = await Booking.find({
-        patient_email: email,
-        date: { $gte: date },
-      }).sort({ date: -1 });
+    const maxLimit = 100;
 
-      // console.log(pending);
+    // Set a maximum limit to prevent the client from requesting too many records
+    limit = Math.min(limit, maxLimit);
 
-      res.status(200).send(pending);
-    } else {
-      return res.status(403).send({ message: 'Forbidden Access' });
+    const pendingAppointments = await Booking.countDocuments({
+      patient_email: email,
+      date: { $gte: date },
+    });
+
+    let skip = Math.min((page - 1) * limit, pendingAppointments);
+
+    if (limit > pendingAppointments) {
+      skip = 0;
     }
+
+    const queries = { page, limit, skip };
+
+    queries.pageCount = Math.ceil(pendingAppointments / limit);
+
+    const appointments = await Booking.find({
+      patient_email: email,
+      date: { $gte: date },
+    })
+      .skip(skip)
+      .limit(limit);
+    // Sort by descending order of creation time
+
+    const result = { pendingAppointments, appointments, queries };
+
+    res.status(200).send(result);
   } catch (error) {
-    res.status(500).send(error);
+    console.error(error);
+    const errorMessage =
+      'An error occurred while fetching pending appointments.';
+    res.status(500).send({ message: errorMessage });
   }
 };
 
 // delete booking
 exports.singleBookDelete = async (req, res) => {
   try {
-    const email = req.params.email;
+    const id = req.params.id;
 
-    console.log('Email: ', email);
+    const deleteBooking = await Booking.deleteOne({ _id: id });
 
-    const deleteBooking = await Booking.deleteOne({ email: email });
-
+    console.log('deleted: ', deleteBooking);
     if (deleteBooking.deletedCount !== 1) {
       return res.status(403).json({
         success: false,
@@ -281,7 +287,7 @@ exports.singleBookDelete = async (req, res) => {
       });
     }
 
-    // console.log(deleteBooking);
+    console.log('id: ', id);
 
     res.status(200).json({
       success: true,
@@ -318,5 +324,3 @@ exports.paymentIntent = async (req, res) => {
     });
   }
 };
-
-// how to create login mehtod in in useContext in react

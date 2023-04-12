@@ -8,6 +8,7 @@ const { verify } = require("jsonwebtoken");
 router.get("/doctors", adminAuthorization, doctorController.getAllDoctor);
 router.get("/all-doctors", doctorController.getAllDoctor)
 router.get("/doctors/slots", doctorController.getTimeSlots);
+router.get("/search-doctors", doctorController.searchDoctors);
 router.post(
   "/admin/addDoctor",
   verifyToken,

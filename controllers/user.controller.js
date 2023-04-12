@@ -221,7 +221,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    console.log('user: ', user);
+    // console.log('user: ', user);
 
     // verify password
     const isPasswordValid = user.comparePassword(password, user.password);
@@ -418,7 +418,7 @@ exports.updateProfile = async (req, res) => {
 
     const updateUser = await User.updateOne({ email: email }, userData);
 
-    console.log(updateUser);
+    // console.log(updateUser);
 
     if (!updateUser.modifiedCount) {
       return res.status(304).json({

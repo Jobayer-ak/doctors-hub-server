@@ -4,9 +4,12 @@ const bookingController = require('../controllers/booking.controller');
 const verifyToken = require('../middlewares/verifyToken');
 const adminAuthorization = require('../middlewares/adminAuthorization');
 
-router.get('/all-appointments', adminAuthorization, bookingController.allAppointments);
+router.get(
+  '/all-appointments',
+  adminAuthorization,
+  bookingController.allAppointments
+);
 router.get('/bookings', verifyToken, bookingController.getBookingDetails);
-
 router.get(
   '/pending-appointments',
   verifyToken,
@@ -15,7 +18,7 @@ router.get(
 router.post('/booking', verifyToken, bookingController.bookingAppointment);
 router.post(
   '/create-payment-intent',
-  verifyToken, 
+  verifyToken,
   bookingController.paymentIntent
 );
 router.get('/booking/:id', verifyToken, bookingController.singleAppointment);
@@ -25,7 +28,7 @@ router.patch(
   bookingController.updateSingleAppointment
 );
 router.delete(
-  '/booking/delete/:email',
+  '/booking/delete/:id',
   verifyToken,
   bookingController.singleBookDelete
 );

@@ -112,6 +112,14 @@ exports.getAllDoctor = async (req, res) => {
   // }
 };
 
+exports.searchDoctors = async (req, res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+}
+
 // get doctors checkup slots
 exports.getTimeSlots = async (req, res) => {
   try {
