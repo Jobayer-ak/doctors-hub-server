@@ -132,21 +132,21 @@ exports.searchDoctors = async (req, res) => {
 //search specific doctor by any user
 exports.searchSingleDoctor = async (req, res) => {
   try {
-    const docName = req.query.name;
+    const docName = req.query.doctor;
+
     const doctor = await Doctor.findOne({ name: docName });
 
     res.status(200).json({
       success: true,
-      doctor
-    })
-
+      doctor,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: "Didn't find the doctor!"
-    })
+      error: "Didn't find the doctor!",
+    });
   }
-}
+};
 
 // get doctors checkup slots
 exports.getTimeSlots = async (req, res) => {

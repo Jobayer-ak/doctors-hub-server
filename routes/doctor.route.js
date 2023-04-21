@@ -9,7 +9,8 @@ router.get("/doctors", adminAuthorization, doctorController.getAllDoctor);
 router.get("/all-doctors", doctorController.getAllDoctor)
 router.get("/doctors/slots", doctorController.getTimeSlots);
 router.get("/search-doctors", doctorController.searchDoctors);
-router.get("/doctor-single", doctorController.deleteSingleDoctor);
+router.get("/doctor-single", doctorController.searchSingleDoctor);
+
 router.post(
   "/admin/addDoctor",
   verifyToken,
