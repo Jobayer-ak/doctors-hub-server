@@ -20,7 +20,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://sparkling-pegasus-56a187.netlify.app",
+      "https://doctorshubbd.netlify.app",
     ],
     credentials: true,
     methods: ["GET", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
