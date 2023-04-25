@@ -188,7 +188,7 @@ exports.login = async (req, res) => {
 
       date.setDate(date.getDate() + 1);
 
-      const url = 'https://sparkling-pegasus-56a187.netlify.app';
+      const url = 'https://doctorshubbd.netlify.app';
 
       // email html template
       const mailInfo = {
@@ -320,7 +320,7 @@ exports.forgetPasswordEmail = async (req, res) => {
     await user.save({ validateBeforeSave: false });
 
     const url =
-      'https://sparkling-pegasus-56a187.netlify.app/user/set-new-password';
+      'https://doctorshubbd.netlify.app/user/set-new-password';
 
     // email html template
     const mailInfo = {
