@@ -86,7 +86,7 @@ exports.signup = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const url = 'http://localhost:3000';
+    const url = 'https://doctorshubbd.netlify.app';
 
     // email html template
     const mailInfo = {
