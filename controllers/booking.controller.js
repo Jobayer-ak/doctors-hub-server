@@ -45,9 +45,9 @@ exports.allAppointments = async (req, res) => {
 exports.singleAppointment = async (req, res) => {
   try {
     const id = req.params.id;
-
+    console.log('id: ', id);
     const result = await Booking.findOne({ _id: id });
-    // console.log(result);
+    console.log('single appointment: ', result);
 
     res.status(200).json({
       status: 'Success',
@@ -83,6 +83,14 @@ exports.updateSingleAppointment = async (req, res) => {
     const bodyData = {
       appointmentId: req.body.payment.appointment,
       transactionId: req.body.payment.transactionId,
+      patient_name: req.body.payment.patient_name,
+      patient_email: req.body.payment.patient_email,
+      doctor_name: req.body.payment.doctor_name,
+      speciality: req.body.payment.speciality,
+      date: req.body.payment.date,
+      slot: req.body.payment.slot,
+      branch: req.body.payment.branch,
+      fee: req.body.payment.fee,
     };
 
     console.log('updated: ', bookedAppointment);
@@ -302,7 +310,6 @@ exports.singleBookDelete = async (req, res) => {
 exports.paymentIntent = async (req, res) => {
   try {
     const { fee } = req.body;
-    // console.log("book fee: ", req.body)
 
     const amount = fee * 100;
     const paymentIntent = await stripe.paymentIntents.create({
@@ -310,8 +317,6 @@ exports.paymentIntent = async (req, res) => {
       currency: 'usd',
       payment_method_types: ['card'],
     });
-
-    console.log('Payment: ', paymentIntent);
 
     res.status(200).json({
       status: 'Success',
