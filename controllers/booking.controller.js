@@ -45,9 +45,8 @@ exports.allAppointments = async (req, res) => {
 exports.singleAppointment = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log('id: ', id);
+
     const result = await Booking.findOne({ _id: id });
-    console.log('single appointment: ', result);
 
     res.status(200).json({
       status: 'Success',
@@ -65,8 +64,8 @@ exports.singleAppointment = async (req, res) => {
 exports.updateSingleAppointment = async (req, res) => {
   try {
     const id = req.params.id;
-    // console.log('Body: ', req.body);
-    // console.log('from update', id);
+
+    console.log('Id: ', id);
 
     if (!req.body) {
       return res.status(400).json({
@@ -74,11 +73,6 @@ exports.updateSingleAppointment = async (req, res) => {
         message: 'Something went wrong! Try again!',
       });
     }
-
-    const bookedAppointment = await Booking.updateOne(
-      { _id: id },
-      { paid: true }
-    );
 
     const bodyData = {
       appointmentId: req.body.payment.appointment,
@@ -93,20 +87,45 @@ exports.updateSingleAppointment = async (req, res) => {
       fee: req.body.payment.fee,
     };
 
-    console.log('updated: ', bookedAppointment);
+    const tran = await Payment.create(bodyData);
+
+    const filter = { _id: id };
+    const update = { paid: true };
+    const bookedAppointment = await Booking.updateOne(filter, update);
 
     if (!bookedAppointment.modifiedCount) {
       return res.status(403).json({
         status: 'Failed',
         message: 'Something went wrong with payment! Try again!',
       });
-    }
-    const tran = await Payment.create(bodyData);
+    } else {
+      // email html template
+      const mailInfo = {
+        email: req.body.payment.patient_email,
+        subject: 'Payment Confirmation E-mail',
+        html: `
+      <div style="padding:10px; text-align: center; background:#23075e">
+      <h2>Hello ${req.body.payment.patient_name}</h2>
+      <h3>You paid $${req.body.payment.fee} for ${req.body.payment.doctor_name}.</h3>
+      <p>Looking forward to seeing you on ${req.body.payment.date} at ${req.body.payment.slot} in ${req.body.payment.branch} branch.</p>
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Successfully payment has been completed!',
-    });
+      <h3>Our Address</h3>
+      <p>Baghmara, Charapara</p>
+      <p>Mymensingh</p>
+      </div>
+    `,
+      };
+
+      // send email to user
+      sendMail(mailInfo);
+
+      console.log('paid status: ', bookedAppointment);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Successfully payment has been completed!',
+      });
+    }
   } catch (error) {
     res.status(500).json({
       status: 'Failed',
@@ -166,7 +185,7 @@ exports.bookingAppointment = async (req, res) => {
         email: patient_email,
         subject: 'Appointment Confirmation Email',
         html: `
-        <div>
+        <div style="padding:10px; text-align: center; background:#23075e">
         <h2>Hello ${patient_name}</h2>
         <h3>Your Appointment for ${doctor_name} is confirmed.</h3>
         <p>Looking forward to seeing you on ${date} at ${slot} in ${branch} branch.</p>
@@ -287,15 +306,12 @@ exports.singleBookDelete = async (req, res) => {
 
     const deleteBooking = await Booking.deleteOne({ _id: id });
 
-    console.log('deleted: ', deleteBooking);
     if (deleteBooking.deletedCount !== 1) {
       return res.status(403).json({
         success: false,
         message: 'Something Went Wrong!',
       });
     }
-
-    console.log('id: ', id);
 
     res.status(200).json({
       success: true,

@@ -20,6 +20,7 @@ router.get(
   adminAuthorization,
   userController.getAdmin
 );
+router.get('/all-payments', adminAuthorization, userController.getAllPayments);
 router.delete(
   '/user/admin/delete/:email',
   adminAuthorization,

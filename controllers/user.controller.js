@@ -12,6 +12,7 @@ const User = require('../models/user.model');
 const Doctor = require('../models/doctor.model');
 const { sendMail } = require('../utils/email');
 const Review = require('../models/review.model');
+const Payment = require('../models/payment.model');
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -39,40 +40,12 @@ exports.getAllUsers = async (req, res) => {
 
     const result = { users, queries, page };
 
-    // console.log("users: ", users);
-
     res.status(200).send(result);
   } catch (error) {
     console.error(error);
     const errorMessage = 'An error occurred while fetching all users.';
     res.status(500).send({ message: errorMessage });
   }
-  // try {
-  //   const page = parseInt(req.query.page);
-  //   let limit = parseInt(req.query.limit);
-
-  //   const totalUsers = await User.countDocuments({});
-
-  //   if (limit > totalAppointments) {
-  //     limit = totalAppointments;
-  //   }
-  //   const skip = (page - 1) * limit;
-
-  //   const queries = {};
-  //   queries.skip = skip;
-  //   queries.limit = limit;
-
-  //   queries.pageCount = Math.ceil(totalUsers / limit);
-
-  //   const users = await User.find({}).skip(queries.skip).limit(queries.limit);
-
-  //   const result = { users, queries };
-
-  //   // console.log(users);
-  //   res.status(200).send(result);
-  // } catch (error) {
-  //   res.status(500).send(error);
-  // }
 };
 
 // signup
@@ -172,8 +145,6 @@ exports.login = async (req, res) => {
     // load user with email
     const user = await findByEmailService(email);
 
-    // console.log("log: ", user)
-
     if (!user) {
       return res.status(404).json({
         status: 'Failed',
@@ -221,8 +192,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // console.log('user: ', user);
-
     // verify password
     const isPasswordValid = user.comparePassword(password, user.password);
 
@@ -265,7 +234,7 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
   try {
     await res.clearCookie('myCookie');
-    // console.log("cook ",result)
+
     res.send({ message: 'cookie is cleared!' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -278,7 +247,7 @@ exports.getAdmin = async (req, res) => {
     const email = req.params;
 
     const result = await User.findOne(email);
-    // console.log(result);
+
     res.send(result);
   } catch (error) {
     res.status(500).json({
@@ -319,8 +288,7 @@ exports.forgetPasswordEmail = async (req, res) => {
 
     await user.save({ validateBeforeSave: false });
 
-    const url =
-      'https://doctorshubbd.netlify.app/user/set-new-password';
+    const url = 'https://doctorshubbd.netlify.app/user/set-new-password';
 
     // email html template
     const mailInfo = {
@@ -418,8 +386,6 @@ exports.updateProfile = async (req, res) => {
 
     const updateUser = await User.updateOne({ email: email }, userData);
 
-    // console.log(updateUser);
-
     if (!updateUser.modifiedCount) {
       return res.status(304).json({
         status: 'Failed',
@@ -475,7 +441,6 @@ exports.userDetails = async (req, res) => {
 // make admin
 exports.makeAdmin = async (req, res) => {
   try {
-    console.log('req: ', req.params);
     const id = req.params.id;
     const { uRole } = req.body;
 
@@ -572,7 +537,7 @@ exports.addReview = async (req, res) => {
 exports.getReviews = async (req, res) => {
   try {
     const result = await Review.find({});
-    // console.log('res: ', result);
+
     res.status(200).json({
       status: 'Success',
       result,
@@ -582,5 +547,42 @@ exports.getReviews = async (req, res) => {
       status: 'Failed',
       error,
     });
+  }
+};
+
+// get all payments
+exports.getAllPayments = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    const maxLimit = 100;
+
+    // Set a maximum limit to prevent the client from requesting too many records
+    limit = Math.min(limit, maxLimit);
+
+    const totalPayments = await Payment.countDocuments({});
+
+    let skip = Math.min((page - 1) * limit, totalPayments);
+
+    if (limit > totalPayments) {
+      skip = 0;
+    }
+
+    const queries = { page, limit, skip };
+
+    queries.pageCount = Math.ceil(totalPayments / limit);
+
+    const payments = await Payment.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Sort by descending order of creation time
+
+    const result = { paymentInfo: payments, queries };
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.error(error);
+    const errorMessage = 'An error occurred while fetching Payments.';
+    res.status(500).send({ message: errorMessage });
   }
 };
