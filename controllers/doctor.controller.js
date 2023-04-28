@@ -5,8 +5,6 @@ exports.addDoctor = async (req, res) => {
   try {
     const email = req.body.email;
 
-    // console.log("Doctor info: ", req.body);
-
     const exist = await Doctor.find({ email });
 
     if (exist.length !== 0) {
@@ -54,62 +52,12 @@ exports.getAllDoctor = async (req, res) => {
 
     const result = { doctors, queries, page };
 
-    // console.log("users: ", users);
-
     res.status(200).send(result);
   } catch (error) {
     console.error(error);
     const errorMessage = 'An error occurred while fetching all docors.';
     res.status(500).send({ message: errorMessage });
   }
-  // try {
-  //   const page = parseInt(req.query.page);
-  //   let limit = parseInt(req.query.limit);
-
-  //   const totalDoctors = await Doctor.countDocuments({});
-
-  //   if (limit > totalAppointments) {
-  //     limit = totalAppointments;
-  //   }
-  //   const skip = (page - 1) * limit;
-
-  //   const queries = {};
-  //   queries.skip = skip;
-  //   queries.limit = limit;
-
-  //   queries.pageCount = Math.ceil(totalDoctors / limit);
-
-  //   const doctors = await Doctor.find({})
-  //     .skip(queries.skip)
-  //     .limit(queries.limit);
-
-  //   const result = { doctors, queries };
-
-  //   // console.log(totalDoctors);
-
-  //   // if (lastIndex < doctors.length) {
-  //   //   queries.next = {
-  //   //     page: page + 1,
-  //   //   };
-  //   // }
-
-  //   // if (startIndex > 0) {
-  //   //   queries.prev = {
-  //   //     page: page - 1,
-  //   //   };
-  //   // }
-
-  //   // results.result = doctors.slice(startIndex, lastIndex);
-
-  //   // console.log("doctors: ", result);
-
-  //   res.status(200).send(result);
-  // } catch (error) {
-  //   res.status(500).json({
-  //     status: 'Failed',
-  //     message: error.message,
-  //   });
-  // }
 };
 
 // search doctors by any user

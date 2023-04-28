@@ -553,6 +553,8 @@ exports.getReviews = async (req, res) => {
 // get payments for specific user
 exports.getUserPayments = async (req, res) => {
   try {
+    const email = req.query.email;
+
     const page = parseInt(req.query.page) || 1;
     let limit = parseInt(req.query.limit) || 10;
     const maxLimit = 100;
@@ -560,7 +562,9 @@ exports.getUserPayments = async (req, res) => {
     // Set a maximum limit to prevent the client from requesting too many records
     limit = Math.min(limit, maxLimit);
 
-    const totalPayments = await Payment.countDocuments({});
+    const totalPayments = await Payment.countDocuments({
+      patient_email: email,
+    });
 
     let skip = Math.min((page - 1) * limit, totalPayments);
 
@@ -572,7 +576,7 @@ exports.getUserPayments = async (req, res) => {
 
     queries.pageCount = Math.ceil(totalPayments / limit);
 
-    const payments = await Payment.find({})
+    const payments = await Payment.find({patient_email: email})
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 }); // Sort by descending order of creation time
@@ -585,7 +589,7 @@ exports.getUserPayments = async (req, res) => {
     const errorMessage = 'An error occurred while fetching Payments.';
     res.status(500).send({ message: errorMessage });
   }
-}
+};
 
 // get all payments for admin
 exports.getAllPayments = async (req, res) => {

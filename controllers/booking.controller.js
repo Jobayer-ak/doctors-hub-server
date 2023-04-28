@@ -65,8 +65,6 @@ exports.updateSingleAppointment = async (req, res) => {
   try {
     const id = req.params.id;
 
-    console.log('Id: ', id);
-
     if (!req.body) {
       return res.status(400).json({
         status: 'Failed',
@@ -118,8 +116,6 @@ exports.updateSingleAppointment = async (req, res) => {
 
       // send email to user
       sendMail(mailInfo);
-
-      console.log('paid status: ', bookedAppointment);
 
       res.status(200).json({
         status: 'success',

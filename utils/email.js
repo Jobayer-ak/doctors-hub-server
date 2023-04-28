@@ -1,11 +1,11 @@
-const nodemailer = require("nodemailer");
+const nodemailer = require('nodemailer');
 
 // 1. Sending Email
 exports.sendMail = async (mailInfo) => {
   try {
     //Step 1: Creating the transporter
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: 'smtp.gmail.com',
       port: 587,
       auth: {
         user: process.env.SENDER_EMAIL,
@@ -23,8 +23,7 @@ exports.sendMail = async (mailInfo) => {
 
     //Step 3: Sending email
     await transporter.sendMail(messageOptions);
-    console.log("email send");
   } catch (error) {
-    console.log(error);
+    console.log("Email error: ", error);
   }
 };

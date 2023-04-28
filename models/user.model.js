@@ -1,31 +1,31 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const validator = require('validator');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
-const crypto = require("crypto");
+const crypto = require('crypto');
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Please provide your full name"],
+      required: [true, 'Please provide your full name'],
       trim: true,
-      minLength: [3, "Name should be at least 3 characters"],
-      maxLength: [40, "Name is too large"],
+      minLength: [3, 'Name should be at least 3 characters'],
+      maxLength: [40, 'Name is too large'],
     },
     email: {
       type: String,
-      validate: [validator.isEmail, "Provide a valid Email!"],
+      validate: [validator.isEmail, 'Provide a valid Email!'],
       trim: true,
       lowercase: true,
       unique: true,
-      required: [true, "Email is required!"],
+      required: [true, 'Email is required!'],
     },
     password: {
       type: String,
       trim: true,
-      required: [true, "Password is required"],
+      required: [true, 'Password is required'],
       validate: {
         validator: (value) =>
           validator.isStrongPassword(value, {
@@ -35,13 +35,13 @@ const userSchema = new Schema(
             minUppercase: 1,
             minSymbol: 1,
           }),
-        messae: "Password {VALUE} is not strong enough.",
+        messae: 'Password {VALUE} is not strong enough.',
       },
     },
     confirmPassword: {
       type: String,
       trim: true,
-      required: [true, "Please confirm your password"],
+      required: [true, 'Please confirm your password'],
       validate: {
         validator: function (value) {
           return value === this.password;
@@ -53,35 +53,35 @@ const userSchema = new Schema(
       type: String,
       validate: [
         validator.isMobilePhone,
-        "Please provide a valid contact number!",
+        'Please provide a valid contact number!',
       ],
       required: true,
     },
     role: {
       type: String,
       enum: {
-        values: ["user", "admin"],
-        message: "Role value cannot be {VALUE}",
+        values: ['user', 'admin'],
+        message: 'Role value cannot be {VALUE}',
       },
-      default: "user",
+      default: 'user',
     },
     mobile: {
       type: String,
       validate: [
         validator.isMobilePhone,
-        "Please provide a valid contact number!",
+        'Please provide a valid contact number!',
       ],
       required: true,
     },
     gender: {
       type: String,
-      required: [true, "Select Gender"],
+      required: [true, 'Select Gender'],
       trim: true,
     },
     status: {
       type: String,
-      default: "inactive",
-      enum: ["active", "inactive", "blocked"],
+      default: 'inactive',
+      enum: ['active', 'inactive', 'blocked'],
     },
     address: String,
     imageURL: String,
@@ -95,10 +95,10 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.pre("save", function (next) {
+userSchema.pre('save', function (next) {
   const user = this;
 
-  if (this.isModified("password")) {
+  if (this.isModified('password')) {
     bcrypt.genSalt(10, function (saltError, salt) {
       if (saltError) {
         return next(saltError);
@@ -121,12 +121,12 @@ userSchema.pre("save", function (next) {
 
 userSchema.methods.comparePassword = function (password, hash) {
   const isPasswordValid = bcrypt.compareSync(password, hash);
-  // console.log("Chh: ", isPasswordValid);
+
   return isPasswordValid;
 };
 
 userSchema.methods.generateConfirmationToken = function () {
-  const token = crypto.randomBytes(32).toString("hex");
+  const token = crypto.randomBytes(32).toString('hex');
 
   this.confirmationToken = token;
 
@@ -139,7 +139,7 @@ userSchema.methods.generateConfirmationToken = function () {
   return token;
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
 
