@@ -550,7 +550,44 @@ exports.getReviews = async (req, res) => {
   }
 };
 
-// get all payments
+// get payments for specific user
+exports.getUserPayments = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    const maxLimit = 100;
+
+    // Set a maximum limit to prevent the client from requesting too many records
+    limit = Math.min(limit, maxLimit);
+
+    const totalPayments = await Payment.countDocuments({});
+
+    let skip = Math.min((page - 1) * limit, totalPayments);
+
+    if (limit > totalPayments) {
+      skip = 0;
+    }
+
+    const queries = { page, limit, skip };
+
+    queries.pageCount = Math.ceil(totalPayments / limit);
+
+    const payments = await Payment.find({})
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Sort by descending order of creation time
+
+    const result = { paymentInfo: payments, queries };
+
+    res.status(200).send(result);
+  } catch (error) {
+    console.error(error);
+    const errorMessage = 'An error occurred while fetching Payments.';
+    res.status(500).send({ message: errorMessage });
+  }
+}
+
+// get all payments for admin
 exports.getAllPayments = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
